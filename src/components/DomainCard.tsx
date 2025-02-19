@@ -1,11 +1,9 @@
-// src/components/DomainCard.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Globe, 
   DollarSign, 
   Clock, 
   Heart,
-  ChartLine,
   Shield,
   ShieldCheck,
   ShieldAlert
@@ -18,16 +16,16 @@ interface DomainCardProps {
   onSelect: (listing: DomainListing) => void;
   onFavorite: (id: string) => void;
   isFavorite: boolean;
+  isDetailed?: boolean;
 }
 
 const DomainCard: React.FC<DomainCardProps> = ({ 
   listing, 
   onSelect, 
   onFavorite,
-  isFavorite 
+  isFavorite,
+  isDetailed = false
 }) => {
-  const [showPriceHistory, setShowPriceHistory] = useState(false);
-
   const getVerificationIcon = () => {
     switch (listing.verificationStatus) {
       case 'verified':
@@ -40,21 +38,33 @@ const DomainCard: React.FC<DomainCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow">
+    <div className={`bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow ${
+      isDetailed ? 'w-full' : ''
+    }`}>
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center space-x-2">
           <Globe className="text-gray-400" size={20} />
           <h3 className="text-lg font-medium">{listing.domain}</h3>
           {getVerificationIcon()}
         </div>
-        <button
-          onClick={() => onFavorite(listing.id)}
-          className={`p-2 rounded-full ${
-            isFavorite ? 'text-red-500' : 'text-gray-400'
-          } hover:bg-gray-100`}
-        >
-          <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
-        </button>
+        <div className="flex items-center space-x-2">
+          {isDetailed && (
+            <button
+              className="text-blue-600 hover:text-blue-800"
+              onClick={() => onSelect(null)}
+            >
+              ← Back to listings
+            </button>
+          )}
+          <button
+            onClick={() => onFavorite(listing.id)}
+            className={`p-2 rounded-full ${
+              isFavorite ? 'text-red-500' : 'text-gray-400'
+            } hover:bg-gray-100`}
+          >
+            <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2 mb-4">
@@ -63,12 +73,6 @@ const DomainCard: React.FC<DomainCardProps> = ({
             <DollarSign className="text-gray-400" size={20} />
             <span className="font-medium">{listing.price} ETH</span>
           </div>
-          <button
-            onClick={() => setShowPriceHistory(!showPriceHistory)}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <ChartLine size={20} />
-          </button>
         </div>
 
         <div className="flex items-center space-x-2">
@@ -79,8 +83,8 @@ const DomainCard: React.FC<DomainCardProps> = ({
         </div>
       </div>
 
-      {showPriceHistory && listing.priceHistory.length > 0 && (
-        <div className="h-32 mt-4">
+      {isDetailed && listing.priceHistory.length > 0 && (
+        <div className="h-48 mt-4">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={listing.priceHistory}>
               <XAxis 
@@ -109,12 +113,14 @@ const DomainCard: React.FC<DomainCardProps> = ({
         </div>
       )}
 
-      <button
-        onClick={() => onSelect(listing)}
-        className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        View Details
-      </button>
+      {!isDetailed && (
+        <button
+          onClick={() => onSelect(listing)}
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          View Details
+        </button>
+      )}
     </div>
   );
 };
