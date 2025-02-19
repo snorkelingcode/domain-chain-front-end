@@ -51,16 +51,6 @@ const DomainEscrowUI: React.FC = () => {
   const renderModeToggle = () => (
     <div className="flex justify-center space-x-4 mb-8">
       <button
-        onClick={() => setMode('sell')}
-        className={`px-4 py-2 rounded-lg ${
-          mode === 'sell' 
-            ? 'bg-blue-600 text-white' 
-            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-        }`}
-      >
-        Sell Domain
-      </button>
-      <button
         onClick={() => setMode('buy')}
         className={`px-4 py-2 rounded-lg ${
           mode === 'buy' 
@@ -69,6 +59,16 @@ const DomainEscrowUI: React.FC = () => {
         }`}
       >
         Buy Domain
+      </button>
+      <button
+        onClick={() => setMode('sell')}
+        className={`px-4 py-2 rounded-lg ${
+          mode === 'sell' 
+            ? 'bg-blue-600 text-white' 
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }`}
+      >
+        Sell Domain
       </button>
     </div>
   );
