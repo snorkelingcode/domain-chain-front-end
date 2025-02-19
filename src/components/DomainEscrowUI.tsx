@@ -15,7 +15,7 @@ import { useEscrowContract } from '../hooks/useEscrowContract';
 
 const DomainEscrowUI: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [mode, setMode] = useState<'sell' | 'buy'>('sell');
+  const [mode, setMode] = useState<'sell' | 'buy'>('buy');
   const [domainName, setDomainName] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [duration, setDuration] = useState<string>('7');
