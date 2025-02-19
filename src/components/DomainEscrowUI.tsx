@@ -20,6 +20,7 @@ const DomainEscrowUI: React.FC = () => {
   const [price, setPrice] = useState<string>('');
   const [duration, setDuration] = useState<string>('7');
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
+  const [showHowItWorks, setShowHowItWorks] = useState<boolean>(false);
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 

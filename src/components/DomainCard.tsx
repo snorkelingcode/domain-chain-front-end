@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Globe, 
   DollarSign, 
   Clock, 
   Heart,
+  ChartLine,
   Shield,
   ShieldCheck,
   ShieldAlert
@@ -50,8 +51,8 @@ const DomainCard: React.FC<DomainCardProps> = ({
         <div className="flex items-center space-x-2">
           {isDetailed && (
             <button
-              className="text-blue-600 hover:text-blue-800"
-              onClick={() => onSelect(null)}
+              className="text-gray-400 hover:text-gray-600"
+              onClick={() => onSelect(listing)}
             >
               ← Back to listings
             </button>
