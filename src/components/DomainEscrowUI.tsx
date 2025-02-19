@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, AlertDescription } from '../components/alert';
+import BuyerInterface from './BuyerInterface';
+import { Alert, AlertDescription } from './alert';
 import { 
   ArrowRight, 
   ChevronDown, 
@@ -10,6 +11,7 @@ import {
   Wallet,
   Loader 
 } from 'lucide-react';
+import { useEscrowContract } from '../hooks/useEscrowContract';
 
 const DomainEscrowUI: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -21,18 +23,12 @@ const DomainEscrowUI: React.FC = () => {
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const steps = [
-    { number: 1, title: 'Create Escrow' },
-    { number: 2, title: 'Await Buyer' },
-    { number: 3, title: 'Transfer Domain' },
-    { number: 4, title: 'Complete Sale' }
-  ];
+  const { connectWallet, createEscrow } = useEscrowContract();
 
-  const connectWallet = async () => {
+  const handleWalletConnect = async () => {
     setLoading(true);
     try {
-      // Simulated wallet connection
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await connectWallet();
       setIsWalletConnected(true);
     } catch (error) {
       console.error('Wallet connection error:', error);
@@ -40,42 +36,61 @@ const DomainEscrowUI: React.FC = () => {
     setLoading(false);
   };
 
-  const handleCreateEscrow = (e: React.FormEvent) => {
+  const handleCreateEscrow = async (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentStep(2);
+    setLoading(true);
+    try {
+      await createEscrow(domainName, price, parseInt(duration));
+      setCurrentStep(2);
+    } catch (error) {
+      console.error('Error creating escrow:', error);
+    }
+    setLoading(false);
   };
+
+  const renderModeToggle = () => (
+    <div className="flex justify-center space-x-4 mb-8">
+      <button
+        onClick={() => setMode('sell')}
+        className={`px-4 py-2 rounded-lg ${
+          mode === 'sell' 
+            ? 'bg-blue-600 text-white' 
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }`}
+      >
+        Sell Domain
+      </button>
+      <button
+        onClick={() => setMode('buy')}
+        className={`px-4 py-2 rounded-lg ${
+          mode === 'buy' 
+            ? 'bg-blue-600 text-white' 
+            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+        }`}
+      >
+        Buy Domain
+      </button>
+    </div>
+  );
+
+  if (mode === 'buy') {
+    return (
+      <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
+        {renderModeToggle()}
+        <BuyerInterface />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      {/* Mode Toggle */}
-      <div className="flex justify-center space-x-4 mb-8">
-        <button
-          onClick={() => setMode('sell')}
-          className={`px-4 py-2 rounded-lg ${
-            mode === 'sell' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          Sell Domain
-        </button>
-        <button
-          onClick={() => setMode('buy')}
-          className={`px-4 py-2 rounded-lg ${
-            mode === 'buy' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          Buy Domain
-        </button>
-      </div>
+      {renderModeToggle()}
 
       {/* Wallet Connection */}
       {!isWalletConnected && (
         <div className="flex justify-end mb-4">
           <button
-            onClick={connectWallet}
+            onClick={handleWalletConnect}
             disabled={loading}
             className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg hover:bg-gray-200"
           >
@@ -91,7 +106,12 @@ const DomainEscrowUI: React.FC = () => {
 
       {/* Progress Steps */}
       <div className="flex justify-between mb-8">
-        {steps.map((step, index) => (
+        {[
+          { number: 1, title: 'Create Escrow' },
+          { number: 2, title: 'Await Buyer' },
+          { number: 3, title: 'Transfer Domain' },
+          { number: 4, title: 'Complete Sale' }
+        ].map((step, index, steps) => (
           <div key={step.number} className="flex items-center">
             <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
               currentStep >= step.number ? 'bg-blue-600 text-white' : 'bg-gray-200'
@@ -114,7 +134,7 @@ const DomainEscrowUI: React.FC = () => {
 
       {/* Main Content */}
       <div className="bg-white rounded-lg shadow-lg p-6">
-        {currentStep === 1 && mode === 'sell' && (
+        {currentStep === 1 && (
           <form onSubmit={handleCreateEscrow} className="space-y-6">
             <h2 className="text-2xl font-bold mb-6">Create Domain Escrow</h2>
             
@@ -194,9 +214,17 @@ const DomainEscrowUI: React.FC = () => {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading || !isWalletConnected}
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
             >
-              Create Escrow
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader className="animate-spin mr-2" size={20} />
+                  Creating Escrow...
+                </div>
+              ) : (
+                'Create Escrow'
+              )}
             </button>
           </form>
         )}
