@@ -2,8 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { ethers, BrowserProvider, Contract, JsonRpcSigner } from 'ethers';
 import axios from 'axios';
 import contractAddresses from '../config/contract-addresses';
-
-// Import ABI
 import DomainEscrowABI from '../abi/DomainEscrow.json';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -40,36 +38,47 @@ export const useEscrowContract = () => {
   const [account, setAccount] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleAccountsChanged = useCallback((accounts: string[]) => {
-    if (accounts.length > 0) {
-      setAccount(accounts[0]);
-    } else {
-      setAccount(null);
+  const initializeContract = useCallback(async (signerInstance: JsonRpcSigner) => {
+    try {
+      if (!contractAddresses.escrow) {
+        throw new Error('Escrow contract address not found');
+      }
+
+      // Initialize contract
+      const escrowContract = new ethers.Contract(
+        contractAddresses.escrow,
+        DomainEscrowABI,
+        signerInstance
+      );
+
+      setContract(escrowContract);
+      return escrowContract;
+    } catch (error) {
+      console.error('Contract initialization failed:', error);
+      throw error;
     }
   }, []);
+
+  const handleAccountsChanged = useCallback(async (accounts: string[]) => {
+    if (accounts.length > 0) {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      
+      setAccount(accounts[0]);
+      setProvider(provider);
+      setSigner(signer);
+      await initializeContract(signer);
+    } else {
+      setAccount(null);
+      setSigner(null);
+      setContract(null);
+      setProvider(null);
+    }
+  }, [initializeContract]);
 
   const handleChainChanged = useCallback(() => {
     window.location.reload();
   }, []);
-
-  useEffect(() => {
-    if (window.ethereum) {
-      // Add event listeners
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('chainChanged', handleChainChanged);
-
-      // Check if already connected
-      window.ethereum.request({ method: 'eth_accounts' })
-        .then(handleAccountsChanged)
-        .catch((err: Error) => console.error("Failed to get accounts", err));
-
-      // Cleanup
-      return () => {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('chainChanged', handleChainChanged);
-      };
-    }
-  }, [handleAccountsChanged, handleChainChanged]);
 
   const connectWallet = useCallback(async () => {
     if (!window.ethereum) {
@@ -91,22 +100,16 @@ export const useEscrowContract = () => {
       
       // Get the connected chain ID
       const network = await provider.getNetwork();
-      const chainId = network.chainId;
-      console.log('Connected to chain:', chainId);
+      console.log('Connected to chain:', network.chainId.toString());
 
       // Initialize contract
-      const escrowContract = new ethers.Contract(
-        contractAddresses.escrow,
-        DomainEscrowABI,
-        signer
-      );
+      await initializeContract(signer);
 
       setProvider(provider);
-      setContract(escrowContract);
       setSigner(signer);
       setAccount(accounts[0]);
 
-      return { signer, contract: escrowContract, account: accounts[0] };
+      return { signer, account: accounts[0] };
     } catch (error: any) {
       console.error('Wallet connection failed:', error);
       setError(error.message || 'Failed to connect wallet');
@@ -114,7 +117,7 @@ export const useEscrowContract = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [initializeContract]);
 
   const initiateInstantTransfer = useCallback(async (params: TransferParams) => {
     if (!contract || !signer) {
@@ -125,9 +128,9 @@ export const useEscrowContract = () => {
     setError(null);
 
     try {
-      // 1. Get instant transfer proof from backend
+      // Get instant transfer proof from backend
       const { data: verificationData } = await axios.post(
-        `${BACKEND_URL}/verify-domain`,
+        `${BACKEND_URL}/api/escrow/verify`,
         {
           domainName: params.domainName,
           seller: params.seller,
@@ -135,7 +138,7 @@ export const useEscrowContract = () => {
         }
       );
 
-      // 2. Prepare transfer parameters
+      // Prepare transfer parameters
       const transaction = {
         tokenId: verificationData.tokenId,
         seller: params.seller,
@@ -144,7 +147,7 @@ export const useEscrowContract = () => {
         timestamp: Math.floor(Date.now() / 1000)
       };
 
-      // 3. Get seller signature
+      // Get seller signature
       const message = ethers.solidityPacked(
         ['uint256', 'address', 'address', 'uint256', 'uint256'],
         [transaction.tokenId, transaction.seller, transaction.buyer, transaction.price, transaction.timestamp]
@@ -152,7 +155,7 @@ export const useEscrowContract = () => {
       const messageHash = ethers.keccak256(message);
       const signature = await signer.signMessage(ethers.getBytes(messageHash));
 
-      // 4. Execute instant transfer
+      // Execute instant transfer
       const tx = await contract.instantDomainTransfer(
         transaction,
         signature,
@@ -162,8 +165,8 @@ export const useEscrowContract = () => {
 
       const receipt = await tx.wait();
       
-      // 5. Notify backend of transfer initiation
-      await axios.post(`${BACKEND_URL}/transfer-initiated`, {
+      // Notify backend of transfer initiation
+      await axios.post(`${BACKEND_URL}/api/escrow/initiated`, {
         transactionHash: receipt.hash,
         domainName: params.domainName,
         seller: params.seller,
@@ -257,6 +260,26 @@ export const useEscrowContract = () => {
       setLoading(false);
     }
   }, [contract, signer]);
+
+  // Check for existing connection on mount
+  useEffect(() => {
+    if (window.ethereum) {
+      // Check if already connected
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then(handleAccountsChanged)
+        .catch((err: Error) => console.error("Failed to get accounts", err));
+
+      // Setup event listeners
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
+
+      // Cleanup
+      return () => {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
+      };
+    }
+  }, [handleAccountsChanged, handleChainChanged]);
 
   return {
     connectWallet,
