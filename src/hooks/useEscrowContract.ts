@@ -34,7 +34,7 @@ export const useEscrowContract = () => {
         setSigner(web3Signer);
 
         // Initialize contract (replace with your actual contract address and ABI)
-        const contractAddress = '0xac5440197b758b85adadb27deb93b33429823433b59ab1a1a0771626fa2ee4';
+        const contractAddress = import.meta.env.VITE_ESCROW_CONTRACT_ADDRESS;
         const contractABI = [
           // Add your contract ABI here
           "function createEscrow(string memory domain, uint256 price, uint256 duration)",
