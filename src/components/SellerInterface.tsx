@@ -136,7 +136,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                     <li>Our platform will verify domain ownership</li>
                     <li>Domain will be temporarily transferred to our escrow platform</li>
                     <li>New EPP code will be generated to prevent unauthorized transfers</li>
-                    <li>WARNING: Once you verify your domain the site will own the domain until a buyer is found. You may cancel your listing at any time and you will be provided with the new EPP code.</li>
+                    <text>WARNING: Once you verify your domain the platform change your EPP code while in escrow. You may cancel your listing at any time for the new EPP code.</text>
                   </ol>
                 </AlertDescription>
               </Alert>
