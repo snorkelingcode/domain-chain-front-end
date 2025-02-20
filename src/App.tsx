@@ -4,16 +4,23 @@ import SellerInterface from './components/SellerInterface';
 
 function App() {
   const [mode, setMode] = useState<'buy' | 'sell'>('buy');
+  const [newListingTrigger, setNewListingTrigger] = useState(0);
+
+  const handleListingPublished = () => {
+    setMode('buy');
+    setNewListingTrigger(prev => prev + 1);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center mb-6 mt-4">
+        <div className="flex justify-center items-center mb-6 mt-4 relative">
+          {/* Tabs container with reduced width and centered */}
           <div className="inline-flex rounded-md shadow-sm" role="group">
             <button 
               type="button"
               onClick={() => setMode('buy')}
-              className={`px-4 py-2 text-sm font-medium border ${
+              className={`px-3 py-1.5 text-sm font-medium border ${
                 mode === 'buy' 
                   ? 'bg-blue-600 text-white border-blue-600' 
                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
@@ -24,7 +31,7 @@ function App() {
             <button 
               type="button"
               onClick={() => setMode('sell')}
-              className={`px-4 py-2 text-sm font-medium border ${
+              className={`px-3 py-1.5 text-sm font-medium border ${
                 mode === 'sell' 
                   ? 'bg-blue-600 text-white border-blue-600' 
                   : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
@@ -35,7 +42,11 @@ function App() {
           </div>
         </div>
         
-        {mode === 'buy' ? <BuyerInterface /> : <SellerInterface />}
+        {mode === 'buy' ? (
+          <BuyerInterface key={newListingTrigger} />
+        ) : (
+          <SellerInterface onListingPublished={handleListingPublished} />
+        )}
       </div>
     </div>
   );

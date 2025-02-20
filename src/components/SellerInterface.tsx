@@ -5,14 +5,17 @@ import {
   Clock, 
   DollarSign, 
   Globe, 
-  Link,
-  ServerCog,
   ShieldCheck
 } from 'lucide-react';
 import { Alert, AlertDescription } from './alert';
 import { useEscrowContract } from '../hooks/useEscrowContract';
 
-const SellerInterface: React.FC = () => {
+// Define the prop interface
+interface SellerInterfaceProps {
+  onListingPublished: () => void;
+}
+
+const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [domainName, setDomainName] = useState('');
   const [price, setPrice] = useState('');
@@ -51,6 +54,11 @@ const SellerInterface: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleListingComplete = () => {
+    // Call the callback to switch to buy mode and potentially refresh listings
+    onListingPublished();
   };
 
   return (
@@ -108,7 +116,7 @@ const SellerInterface: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium mb-1">EPP/Authorization Code</label>
                 <div className="relative">
-                  <ServerCog className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <ShieldCheck className="absolute left-3 top-3 text-gray-400" size={20} />
                   <input
                     type="text"
                     value={eppCode}
@@ -249,6 +257,12 @@ const SellerInterface: React.FC = () => {
                 Copy Link
               </button>
             </div>
+            <button
+              onClick={handleListingComplete}
+              className="mt-6 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Listings
+            </button>
           </div>
         )}
       </div>
