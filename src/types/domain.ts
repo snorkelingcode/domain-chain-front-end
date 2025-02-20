@@ -8,10 +8,9 @@ export interface DomainListing {
   verificationStatus: 'verified' | 'pending' | 'unverified';
   priceHistory: PriceHistoryItem[];
   duration: number;
-  description?: string;
   category?: string;
   tld?: string;
-  transferStatus?: TransferStatus;
+  description?: string;
 }
 
 export interface PriceHistoryItem {
