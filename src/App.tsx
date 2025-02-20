@@ -1,10 +1,9 @@
-import React from 'react';
-import DomainEscrowUI from './components/DomainEscrowUI';
+import BuyerInterface from './components/BuyerInterface';
 
 function App() {
   return (
     <div className="min-h-screen bg-gray-100">
-      <DomainEscrowUI />
+      <BuyerInterface />
     </div>
   );
 }
