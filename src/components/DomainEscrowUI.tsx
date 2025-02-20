@@ -20,7 +20,6 @@ const DomainEscrowUI: React.FC = () => {
   const [price, setPrice] = useState<string>('');
   const [duration, setDuration] = useState<string>('7');
   const [showInstructions, setShowInstructions] = useState<boolean>(false);
-  const [showHowItWorks, setShowHowItWorks] = useState<boolean>(false);
   const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -41,7 +40,11 @@ const DomainEscrowUI: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await createEscrow(domainName, price, parseInt(duration));
+      await createEscrow({
+        domainName: domainName,
+        price: price,
+        duration: parseInt(duration, 10) // added radix parameter for explicit base-10 conversion
+      });
       setCurrentStep(2);
     } catch (error) {
       console.error('Error creating escrow:', error);

@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// src/components/BuyerInterface.tsx
+import React, { useState, useEffect, useMemo } from 'react';
 import { useEscrowContract } from '../hooks/useEscrowContract';
 import { Alert, AlertDescription } from './alert';
+import axios from 'axios';
 import { 
   ArrowRight,
   CheckCircle,
@@ -11,7 +13,9 @@ import {
 } from 'lucide-react';
 import DomainSearch from './DomainSearch';
 import DomainCard from './DomainCard';
-import type { DomainListing, SearchFilters } from '../types/domain';
+import type { DomainListing, SearchFilters, TransferStatus } from '../types/domain';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const BuyerInterface: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -31,66 +35,32 @@ const BuyerInterface: React.FC = () => {
   const [selectedListing, setSelectedListing] = useState<DomainListing | null>(null);
   const [listings, setListings] = useState<DomainListing[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [transferStatus, setTransferStatus] = useState<TransferStatus | null>(null);
 
-  // Mock contract functions for now
-  const connectWallet = async () => {
-    // Implementation would go here
-    return Promise.resolve();
-  };
+  const { initiateInstantTransfer, connectWallet, signer } = useEscrowContract();
 
-  const confirmDomainTransfer = async () => {
-    // Implementation would go here
-    return Promise.resolve();
-  };
+  // Initialize wallet connection on mount
+  useEffect(() => {
+    const initializeWallet = async () => {
+      try {
+        await connectWallet();
+      } catch (error) {
+        console.error('Failed to connect wallet:', error);
+      }
+    };
 
-  const releaseFunds = async () => {
-    // Implementation would go here
-    return Promise.resolve();
-  };
+    initializeWallet();
+  }, [connectWallet]);
 
-  // Simulated data fetching
   useEffect(() => {
     const fetchListings = async () => {
-      // In a real app, this would fetch from your contract
-      const mockListings: DomainListing[] = [
-        {
-          id: '1',
-          domain: 'example.com',
-          price: '2.5',
-          seller: '0x1234...5678',
-          createdAt: new Date().toISOString(),
-          status: 'active',
-          verificationStatus: 'verified',
-          priceHistory: [
-            { price: '3.0', date: '2024-01-01' },
-            { price: '2.8', date: '2024-02-01' },
-            { price: '2.5', date: '2024-03-01' }
-          ],
-          duration: 14,
-          description: 'Premium domain name',
-          category: 'Technology',
-          tld: '.com'
-        },
-        {
-          id: '2',
-          domain: 'crypto.io',
-          price: '5.0',
-          seller: '0x5678...9012',
-          createdAt: new Date().toISOString(),
-          status: 'active',
-          verificationStatus: 'pending',
-          priceHistory: [
-            { price: '6.0', date: '2024-01-01' },
-            { price: '5.5', date: '2024-02-01' },
-            { price: '5.0', date: '2024-03-01' }
-          ],
-          duration: 30,
-          description: 'Perfect for crypto projects',
-          category: 'Crypto',
-          tld: '.io'
-        }
-      ];
-      setListings(mockListings);
+      try {
+        const { data } = await axios.get(`${BACKEND_URL}/listings`);
+        setListings(data);
+      } catch (error) {
+        console.error('Failed to fetch listings:', error);
+        setListings([]);
+      }
     };
 
     fetchListings();
@@ -117,60 +87,154 @@ const BuyerInterface: React.FC = () => {
     setCurrentStep(1);
   };
 
-  const filteredListings = listings
-    .filter(listing => {
-      if (showFavoritesOnly && !favorites.includes(listing.id)) {
-        return false;
-      }
-      
-      if (searchQuery && !listing.domain.toLowerCase().includes(searchQuery.toLowerCase())) {
-        return false;
-      }
+  const monitorTransferProgress = async (transactionHash: string) => {
+    const checkProgress = async () => {
+      try {
+        const { data } = await axios.get(
+          `${BACKEND_URL}/transfer-status/${transactionHash}`
+        );
+        
+        setTransferStatus(data);
 
-      if (filters.tld.length > 0 && !filters.tld.includes(listing.tld || '')) {
-        return false;
+        if (data.state === 'completed') {
+          setCurrentStep(4);
+          setSuccess('Transfer completed successfully!');
+        } else if (data.state === 'failed') {
+          setError('Transfer failed. Please try again.');
+        } else {
+          // Continue polling
+          setTimeout(checkProgress, 3000);
+        }
+      } catch (error) {
+        console.error('Error checking transfer status:', error);
       }
+    };
 
-      if (filters.verificationStatus.length > 0 && 
-          !filters.verificationStatus.includes(listing.verificationStatus)) {
-        return false;
-      }
-
-      const price = parseFloat(listing.price);
-      if (price < filters.priceRange.min || price > filters.priceRange.max) {
-        return false;
-      }
-
-      return true;
-    })
-    .sort((a, b) => {
-      const multiplier = filters.sortOrder === 'asc' ? 1 : -1;
-      
-      switch (filters.sortBy) {
-        case 'price':
-          return (parseFloat(a.price) - parseFloat(b.price)) * multiplier;
-        case 'name':
-          return a.domain.localeCompare(b.domain) * multiplier;
-        case 'date':
-        default:
-          return (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) * multiplier;
-      }
-    });
+    checkProgress();
+  };
 
   const handlePurchase = async () => {
-    if (!selectedListing) return;
+    if (!selectedListing || !signer) return;
     
     setLoading(true);
     setError('');
     try {
-      // Here you would typically call the contract to fund the escrow
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const buyerAddress = await signer.getAddress();
+      
+      // Initiate instant transfer
+      const receipt = await initiateInstantTransfer({
+        domainName: selectedListing.domain,
+        price: selectedListing.price,
+        seller: selectedListing.seller,
+        buyer: buyerAddress
+      });
+
+      // Start monitoring progress
+      monitorTransferProgress(receipt.hash);
+      
+      // Update UI
       setCurrentStep(2);
-      setSuccess('Escrow funded successfully!');
-    } catch (err) {
-      setError('Failed to fund escrow. Please try again.');
+      setSuccess('Transfer initiated!');
+      setTransferStatus({
+        state: 'initiated',
+        progress: 0
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to initiate transfer');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const filteredListings = useMemo(() => {
+    return listings
+      .filter(listing => {
+        // Filter by favorites
+        if (showFavoritesOnly && !favorites.includes(listing.id)) {
+          return false;
+        }
+        
+        // Filter by search query
+        if (searchQuery && !listing.domain.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
+
+        // Filter by TLD
+        if (filters.tld.length > 0 && !filters.tld.includes(listing.tld || '')) {
+          return false;
+        }
+
+        // Filter by verification status
+        if (filters.verificationStatus.length > 0 && 
+            !filters.verificationStatus.includes(listing.verificationStatus)) {
+          return false;
+        }
+
+        // Filter by price range
+        const price = parseFloat(listing.price);
+        if (price < filters.priceRange.min || price > filters.priceRange.max) {
+          return false;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        const multiplier = filters.sortOrder === 'asc' ? 1 : -1;
+        
+        switch (filters.sortBy) {
+          case 'price':
+            return (parseFloat(a.price) - parseFloat(b.price)) * multiplier;
+          case 'name':
+            return a.domain.localeCompare(b.domain) * multiplier;
+          case 'date':
+          default:
+            return (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) * multiplier;
+        }
+      });
+  }, [listings, searchQuery, filters, favorites, showFavoritesOnly]);
+
+  const renderTransferStatus = () => {
+    if (!transferStatus) return null;
+
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-4">Transfer in Progress</h2>
+        
+        <div className="space-y-4">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div 
+              className="bg-blue-600 h-2.5 rounded-full transition-all duration-500" 
+              style={{ width: `${transferStatus.progress}%` }}
+            ></div>
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>Transfer Initiated</span>
+            <span>Domain Verification</span>
+            <span>Transfer Complete</span>
+          </div>
+
+          <Alert className={transferStatus.state === 'completed' ? 'bg-green-50' : 'bg-blue-50'}>
+            <AlertDescription>
+              {transferStatus.state === 'verifying' && 'Verifying domain ownership...'}
+              {transferStatus.state === 'transferring' && 'Processing domain transfer...'}
+              {transferStatus.state === 'completed' && 'Transfer completed successfully!'}
+              {transferStatus.state === 'failed' && 'Transfer failed. Please try again.'}
+              {transferStatus.details && <div className="mt-2 text-sm">{transferStatus.details}</div>}
+            </AlertDescription>
+          </Alert>
+
+          {transferStatus.state === 'failed' && (
+            <button
+              onClick={handlePurchase}
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Retry Transfer
+            </button>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (selectedListing) {
@@ -180,7 +244,7 @@ const BuyerInterface: React.FC = () => {
         <div className="flex justify-between mb-8">
           {[
             { number: 1, title: 'Review Listing' },
-            { number: 2, title: 'Fund Escrow' },
+            { number: 2, title: 'Process Transfer' },
             { number: 3, title: 'Verify Transfer' },
             { number: 4, title: 'Complete Purchase' }
           ].map((step, index) => (
@@ -206,20 +270,20 @@ const BuyerInterface: React.FC = () => {
 
         {/* Status Messages */}
         {error && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
         
         {success && (
-          <Alert className="mb-4">
+          <Alert>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>{success}</AlertDescription>
           </Alert>
         )}
 
-        {/* Detailed View */}
+        {/* Main Content */}
         <div className="space-y-6">
           <DomainCard 
             listing={selectedListing}
@@ -246,105 +310,14 @@ const BuyerInterface: React.FC = () => {
             </button>
           )}
 
-          {currentStep === 2 && (
-            <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-              <h2 className="text-2xl font-bold">Transfer Instructions</h2>
-              
-              <div className="space-y-4">
-                <Alert>
-                  <AlertDescription>
-                    Please follow these steps to complete your domain transfer. The escrow will hold the funds until the transfer is verified.
-                  </AlertDescription>
-                </Alert>
-
-                <div className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">1</div>
-                    <div>
-                      <h3 className="font-semibold text-lg">Choose Your Registrar</h3>
-                      <p className="text-gray-600">Select where you want to transfer the domain. Popular options include Namecheap, GoDaddy, or your preferred registrar.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">2</div>
-                    <div>
-                      <h3 className="font-semibold text-lg">Prepare for Transfer</h3>
-                      <p className="text-gray-600">Create an account with your chosen registrar if you haven't already. Ensure your contact information is up to date.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">3</div>
-                    <div>
-                      <h3 className="font-semibold text-lg">Initiate Transfer</h3>
-                      <p className="text-gray-600">Start the transfer process at your registrar. You'll need the authorization (EPP) code provided by the seller.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">4</div>
-                    <div>
-                      <h3 className="font-semibold text-lg">Confirm Ownership</h3>
-                      <p className="text-gray-600">Respond to any verification emails promptly. This step is crucial for security.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex space-x-4 pt-4">
-                  <button
-                    onClick={() => setCurrentStep(3)}
-                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    I've Started the Transfer
-                  </button>
-                  <button
-                    onClick={() => window.open('https://support.domain-escrow.com/transfer-guide', '_blank')}
-                    className="flex-1 bg-gray-100 text-gray-600 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    View Detailed Guide
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
-              <h2 className="text-2xl font-bold">Verify Transfer</h2>
-              
-              <Alert>
-                <AlertDescription>
-                  Once you've confirmed the domain is in your registrar account, click below to release the funds from escrow.
-                </AlertDescription>
-              </Alert>
-
-              <div className="flex flex-col space-y-4">
-                <button
-                  onClick={() => {
-                    releaseFunds();
-                    setCurrentStep(4);
-                  }}
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Confirm Transfer Complete
-                </button>
-                <button
-                  onClick={() => setCurrentStep(2)}
-                  className="w-full bg-gray-100 text-gray-600 py-2 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Back to Instructions
-                </button>
-              </div>
-            </div>
-          )}
+          {currentStep === 2 && renderTransferStatus()}
 
           {currentStep === 4 && (
             <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
               <h2 className="text-2xl font-bold">Purchase Complete!</h2>
               <p className="text-gray-600">
-                Congratulations! The domain is now yours and the funds have been released to the seller.
+                Congratulations! The domain is now yours.
               </p>
               <button
                 onClick={() => setSelectedListing(null)}
