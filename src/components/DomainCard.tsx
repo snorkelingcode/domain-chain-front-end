@@ -1,5 +1,5 @@
 // src/components/DomainCard.tsx
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Globe, 
   DollarSign, 
@@ -9,20 +9,8 @@ import {
   Shield,
   ShieldCheck,
   ShieldAlert,
-  ExternalLink,
-  CheckCircle
+  ExternalLink
 } from 'lucide-react';
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle, 
-  AlertDialogTrigger 
-} from '@/components/ui/alert-dialog';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { DomainListing } from '../types/domain';
 
@@ -41,19 +29,6 @@ const DomainCard: React.FC<DomainCardProps> = ({
   isFavorite,
   isDetailed = false
 }) => {
-  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
-  const [purchaseConfirmed, setPurchaseConfirmed] = useState(false);
-
-  const handlePurchase = () => {
-    // Simulate purchase process
-    setPurchaseConfirmed(true);
-  };
-
-  const generateTransferCode = () => {
-    // Simple transfer code generation (you'd want a more secure method in production)
-    return Math.random().toString(36).substring(2, 10).toUpperCase();
-  };
-
   const getVerificationIcon = () => {
     switch (listing.verificationStatus) {
       case 'verified':
@@ -236,59 +211,6 @@ const DomainCard: React.FC<DomainCardProps> = ({
         >
           View Details
         </button>
-      )}
-
-      {isDetailed && (
-        <AlertDialog open={isPurchaseModalOpen} onOpenChange={setIsPurchaseModalOpen}>
-          <AlertDialogTrigger asChild>
-            <button
-              className="w-full max-w-[200px] mx-auto bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
-            >
-              Purchase Domain
-            </button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            {!purchaseConfirmed ? (
-              <>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirm Domain Purchase</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    You are about to purchase the domain <strong>{listing.domain}</strong> for <strong>{listing.price} ETH</strong>.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handlePurchase}>
-                    Confirm Purchase
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </>
-            ) : (
-              <div className="text-center space-y-4">
-                <CheckCircle className="mx-auto text-green-600" size={64} />
-                <AlertDialogTitle>Purchase Successful!</AlertDialogTitle>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-600">Domain:</span>
-                    <strong>{listing.domain}</strong>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Transfer Code:</span>
-                    <strong>{generateTransferCode()}</strong>
-                  </div>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogAction onClick={() => {
-                    setIsPurchaseModalOpen(false);
-                    setPurchaseConfirmed(false);
-                  }}>
-                    Close
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </div>
-            )}
-          </AlertDialogContent>
-        </AlertDialog>
       )}
     </div>
   );
