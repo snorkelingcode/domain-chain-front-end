@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-4">
-        <div className="flex justify-center items-center h-24 mb-6 relative">
+       <div className="flex justify-center items-center h-24 mb-4 relative">
           <div className="inline-flex rounded-md shadow-sm" role="group">
             <button 
               type="button"
