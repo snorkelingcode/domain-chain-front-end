@@ -1,22 +1,22 @@
 import React from 'react';
 
-interface AlertProps {
+export interface AlertProps {
   variant?: 'default' | 'destructive';
   children: React.ReactNode;
   className?: string;
 }
 
-interface AlertTitleProps {
+export interface AlertTitleProps {
   children: React.ReactNode;
   className?: string;
 }
 
-interface AlertDescriptionProps {
+export interface AlertDescriptionProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const Alert: React.FC<AlertProps> = ({ 
+export const Alert: React.FC<AlertProps> = ({ 
   variant = 'default', 
   children, 
   className = '' 
@@ -36,7 +36,7 @@ const Alert: React.FC<AlertProps> = ({
   );
 };
 
-const AlertTitle: React.FC<AlertTitleProps> = ({ 
+export const AlertTitle: React.FC<AlertTitleProps> = ({ 
   children, 
   className = '' 
 }) => (
@@ -45,7 +45,7 @@ const AlertTitle: React.FC<AlertTitleProps> = ({
   </h5>
 );
 
-const AlertDescription: React.FC<AlertDescriptionProps> = ({ 
+export const AlertDescription: React.FC<AlertDescriptionProps> = ({ 
   children, 
   className = '' 
 }) => (
@@ -54,4 +54,4 @@ const AlertDescription: React.FC<AlertDescriptionProps> = ({
   </p>
 );
 
-export { Alert, AlertTitle, AlertDescription };
+export default Alert;
