@@ -32,13 +32,21 @@ const BuyerInterface: React.FC = () => {
   const [listings, setListings] = useState<DomainListing[]>([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
-  const { 
-    connectWallet, 
-    contract, 
-    signer,
-    confirmDomainTransfer,
-    releaseFunds 
-  } = useEscrowContract();
+  // Mock contract functions for now
+  const connectWallet = async () => {
+    // Implementation would go here
+    return Promise.resolve();
+  };
+
+  const confirmDomainTransfer = async () => {
+    // Implementation would go here
+    return Promise.resolve();
+  };
+
+  const releaseFunds = async () => {
+    // Implementation would go here
+    return Promise.resolve();
+  };
 
   // Simulated data fetching
   useEffect(() => {
@@ -165,46 +173,9 @@ const BuyerInterface: React.FC = () => {
     setLoading(false);
   };
 
-  const handleVerifyTransfer = async () => {
-    if (!selectedListing) return;
-
-    setLoading(true);
-    setError('');
-    try {
-      await confirmDomainTransfer(selectedListing.id);
-      setCurrentStep(3);
-      setSuccess('Domain transfer verified!');
-    } catch (err) {
-      setError('Failed to verify domain transfer. Please try again.');
-    }
-    setLoading(false);
-  };
-
-  const handleComplete = async () => {
-    if (!selectedListing) return;
-
-    setLoading(true);
-    setError('');
-    try {
-      await releaseFunds(selectedListing.id);
-      setCurrentStep(4);
-      setSuccess('Purchase completed successfully!');
-    } catch (err) {
-      setError('Failed to complete purchase. Please try again.');
-    }
-    setLoading(false);
-  };
-
   if (selectedListing) {
     return (
       <div className="space-y-8">
-        <button
-          onClick={() => setSelectedListing(null)}
-          className="text-blue-600 hover:text-blue-800"
-        >
-          ← Back to listings
-        </button>
-
         {/* Progress Steps */}
         <div className="flex justify-between mb-8">
           {[
@@ -248,79 +219,139 @@ const BuyerInterface: React.FC = () => {
           </Alert>
         )}
 
-        {/* Purchase Flow */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
+        {/* Detailed View */}
+        <div className="space-y-6">
+          <DomainCard 
+            listing={selectedListing}
+            onSelect={() => setSelectedListing(null)}
+            onFavorite={toggleFavorite}
+            isFavorite={favorites.includes(selectedListing.id)}
+            isDetailed={true}
+          />
+          
           {currentStep === 1 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Confirm Purchase</h2>
-              <DomainCard 
-                listing={selectedListing}
-                onSelect={() => {}}
-                onFavorite={toggleFavorite}
-                isFavorite={favorites.includes(selectedListing.id)}
-              />
-              <button
-                onClick={handlePurchase}
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center">
-                    <Loader className="animate-spin mr-2" size={20} />
-                    Processing...
-                  </div>
-                ) : (
-                  'Purchase Domain'
-                )}
-              </button>
-            </div>
+            <button
+              onClick={handlePurchase}
+              disabled={loading}
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+            >
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader className="animate-spin mr-2" size={20} />
+                  Processing...
+                </div>
+              ) : (
+                'Purchase Domain'
+              )}
+            </button>
           )}
 
           {currentStep === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Verify Domain Transfer</h2>
-              <Alert>
-                <AlertDescription>
-                  Please verify that the domain has been transferred to your wallet address. 
-                  Check your domain registrar account for confirmation.
-                </AlertDescription>
-              </Alert>
-              <button
-                onClick={handleVerifyTransfer}
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-              >
-                {loading ? 'Verifying...' : 'Confirm Transfer'}
-              </button>
+            <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold">Transfer Instructions</h2>
+              
+              <div className="space-y-4">
+                <Alert>
+                  <AlertDescription>
+                    Please follow these steps to complete your domain transfer. The escrow will hold the funds until the transfer is verified.
+                  </AlertDescription>
+                </Alert>
+
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">1</div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Choose Your Registrar</h3>
+                      <p className="text-gray-600">Select where you want to transfer the domain. Popular options include Namecheap, GoDaddy, or your preferred registrar.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">2</div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Prepare for Transfer</h3>
+                      <p className="text-gray-600">Create an account with your chosen registrar if you haven't already. Ensure your contact information is up to date.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">3</div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Initiate Transfer</h3>
+                      <p className="text-gray-600">Start the transfer process at your registrar. You'll need the authorization (EPP) code provided by the seller.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-blue-100 text-blue-600 rounded-full p-2 mt-1">4</div>
+                    <div>
+                      <h3 className="font-semibold text-lg">Confirm Ownership</h3>
+                      <p className="text-gray-600">Respond to any verification emails promptly. This step is crucial for security.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4 pt-4">
+                  <button
+                    onClick={() => setCurrentStep(3)}
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    I've Started the Transfer
+                  </button>
+                  <button
+                    onClick={() => window.open('https://support.domain-escrow.com/transfer-guide', '_blank')}
+                    className="flex-1 bg-gray-100 text-gray-600 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    View Detailed Guide
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
           {currentStep === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Complete Purchase</h2>
+            <div className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+              <h2 className="text-2xl font-bold">Verify Transfer</h2>
+              
               <Alert>
                 <AlertDescription>
-                  The domain transfer has been verified. Click below to complete the purchase 
-                  and release funds to the seller.
+                  Once you've confirmed the domain is in your registrar account, click below to release the funds from escrow.
                 </AlertDescription>
               </Alert>
-              <button
-                onClick={handleComplete}
-                disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
-              >
-                {loading ? 'Completing...' : 'Complete Purchase'}
-              </button>
+
+              <div className="flex flex-col space-y-4">
+                <button
+                  onClick={() => {
+                    releaseFunds();
+                    setCurrentStep(4);
+                  }}
+                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Confirm Transfer Complete
+                </button>
+                <button
+                  onClick={() => setCurrentStep(2)}
+                  className="w-full bg-gray-100 text-gray-600 py-2 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Back to Instructions
+                </button>
+              </div>
             </div>
           )}
 
           {currentStep === 4 && (
-            <div className="text-center py-8">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-4">Purchase Complete!</h2>
+            <div className="bg-white rounded-lg shadow-lg p-6 text-center space-y-4">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+              <h2 className="text-2xl font-bold">Purchase Complete!</h2>
               <p className="text-gray-600">
                 Congratulations! The domain is now yours and the funds have been released to the seller.
               </p>
+              <button
+                onClick={() => setSelectedListing(null)}
+                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+              >
+                Return to Listings
+              </button>
             </div>
           )}
         </div>
