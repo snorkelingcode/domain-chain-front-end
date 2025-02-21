@@ -37,7 +37,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md mx-4 sm:mx-auto">
+      <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle>Confirm Domain Purchase</AlertDialogTitle>
           <AlertDialogDescription>
@@ -59,7 +59,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
           {/* Purchase Steps */}
           <div className="space-y-3">
-            <div className="flex items-start justify-center gap-3">
+            <div className="flex items-start justify-center sm:justify-start sm:pl-4 gap-3">
               <div>
                 <h4 className="font-medium flex items-center gap-3">
                   <Shield className="text-blue-600" size={20} />

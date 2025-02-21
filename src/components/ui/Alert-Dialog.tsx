@@ -47,8 +47,8 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 sm:p-0">
-      <div className="relative w-full" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+      <div className="relative w-full max-w-lg px-4" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
@@ -59,7 +59,7 @@ export const AlertDialogContent: React.FC<AlertDialogContentProps> = ({
   children,
   className = ""
 }) => (
-  <div className={`bg-white rounded-lg shadow-lg max-w-lg w-full ${className}`}>
+  <div className={`bg-white rounded-lg shadow-lg w-full ${className}`}>
     {children}
   </div>
 );
