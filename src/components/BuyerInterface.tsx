@@ -129,12 +129,12 @@ const BuyerInterface: React.FC = () => {
 
   // Main listings view
   return (
-    <div className="container mx-auto px-4 pt-4">
+    <div className="container mx-auto px-2 sm:px-4 pt-2 sm:pt-4">
       <div className="flex flex-col items-center">
         {/* Search and Controls Container */}
-        <div className="w-full max-w-2xl flex items-center justify-between gap-4">
+        <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
           {/* Search Bar */}
-          <div className="flex-1">
+          <div className="w-full flex-1">
             <DomainSearch 
               onSearch={handleSearch}
               onFilterChange={handleFilterChange}
@@ -161,9 +161,9 @@ const BuyerInterface: React.FC = () => {
             </button>
           </div>
         </div>
-
+  
         {/* Domain Listings */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-4 sm:mt-6 w-full">
           {filteredListings.map(listing => (
             <DomainCard
               key={listing.id}
@@ -174,7 +174,7 @@ const BuyerInterface: React.FC = () => {
             />
           ))}
         </div>
-
+  
         {filteredListings.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             No domains found matching your criteria

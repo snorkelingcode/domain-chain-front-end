@@ -151,63 +151,48 @@ const DomainCard: React.FC<DomainCardProps> = ({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg p-4 hover:shadow-xl transition-shadow ${
+    <div className={`bg-white rounded-lg shadow p-3 sm:p-4 hover:shadow-lg transition-shadow ${
       isDetailed ? 'w-full' : ''
     }`}>
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div className="flex items-center space-x-2">
-          <Globe className="text-gray-400" size={20} />
-          <h3 className="text-lg font-medium">
+          <Globe className="text-gray-400" size={18} />
+          <h3 className="text-base sm:text-lg font-medium">
             {formatDomainName(listing.domain)}
           </h3>
           {getVerificationIcon()}
         </div>
-        <div className="flex items-center space-x-2">
-          {isDetailed && (
-            <button
-              className="text-gray-400 hover:text-gray-600"
-              onClick={() => onSelect(listing)}
-            >
-              ← Back to listings
-            </button>
-          )}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onFavorite(listing.id);
-            }}
-            className={`p-2 rounded-full ${
-              isFavorite ? 'text-red-500' : 'text-gray-400'
-            } hover:bg-gray-100`}
-          >
-            <Heart fill={isFavorite ? 'currentColor' : 'none'} size={20} />
-          </button>
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onFavorite(listing.id);
+          }}
+          className={`p-1.5 sm:p-2 rounded-full ${
+            isFavorite ? 'text-red-500' : 'text-gray-400'
+          } hover:bg-gray-100`}
+        >
+          <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
+        </button>
       </div>
-
-      <div className="space-y-2 mb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <DollarSign className="text-gray-400" size={20} />
-            <span className="font-medium">{listing.price} ETH</span>
-          </div>
-        </div>
-
+  
+      <div className="space-y-2 mb-3 sm:mb-4">
         <div className="flex items-center space-x-2">
-          <Clock className="text-gray-400" size={20} />
+          <DollarSign className="text-gray-400" size={18} />
+          <span className="font-medium">{listing.price} ETH</span>
+        </div>
+  
+        <div className="flex items-center space-x-2">
+          <Clock className="text-gray-400" size={18} />
           <span className="text-sm text-gray-600">
             {listing.duration} days escrow period
           </span>
         </div>
       </div>
-
-      {renderPriceHistory()}
-      {renderDetailedInfo()}
-
+  
       {!isDetailed && (
         <button
           onClick={() => onSelect(listing)}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
         >
           View Details
         </button>
