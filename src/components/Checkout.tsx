@@ -168,7 +168,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
         <div className="p-6">
           {/* Domain Details */}
-          <div className="bg-gray-50 p-4 rounded-lg mb-3">
+          <div className="bg-gray-50 p-4 rounded-lg mb-1">
             <h3 className="font-medium text-lg mb-2">{listing.domain}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
