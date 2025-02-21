@@ -18,7 +18,7 @@ function App() {
           {/* Header Container */}
           <div className="w-full flex flex-col sm:flex-row sm:justify-between items-center gap-4 sm:gap-6">
             {/* Logo */}
-            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden sm:block'} order-1 sm:order-none`}>
+            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} order-1 sm:order-none`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
