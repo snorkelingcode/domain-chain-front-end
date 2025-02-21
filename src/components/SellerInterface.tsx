@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 import { useEscrowContract } from '../hooks/useEscrowContract';
-import { Alert, AlertDescription } from '../components/alert';
+import { Alert, AlertDescription } from '../components/ui/Alerts';
 
 interface SellerInterfaceProps {
   onListingPublished: () => void;

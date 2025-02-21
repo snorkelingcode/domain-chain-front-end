@@ -1,5 +1,5 @@
 // src/components/DomainCard.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Globe, 
   DollarSign, 
@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { DomainListing } from '../types/domain';
+import Checkout from './Checkout';
 
 interface DomainCardProps {
   listing: DomainListing;
@@ -20,6 +21,7 @@ interface DomainCardProps {
   onFavorite: (id: string) => void;
   isFavorite: boolean;
   isDetailed?: boolean;
+  onPurchase?: () => void;
 }
 
 const DomainCard: React.FC<DomainCardProps> = ({ 
@@ -27,8 +29,26 @@ const DomainCard: React.FC<DomainCardProps> = ({
   onSelect, 
   onFavorite,
   isFavorite,
-  isDetailed = false
+  isDetailed = false,
+  onPurchase
 }) => {
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  const handlePurchaseClick = () => {
+    setShowCheckout(true);
+  };
+
+  const handleCheckoutClose = () => {
+    setShowCheckout(false);
+  };
+
+  const handlePurchaseComplete = () => {
+    setShowCheckout(false);
+    if (onPurchase) {
+      onPurchase();
+    }
+  };
+
   const getVerificationIcon = () => {
     switch (listing.verificationStatus) {
       case 'verified':
@@ -163,14 +183,6 @@ const DomainCard: React.FC<DomainCardProps> = ({
           {getVerificationIcon()}
         </div>
         <div className="flex items-center space-x-2">
-          {isDetailed && (
-            <button
-              className="text-gray-400 hover:text-gray-600"
-              onClick={() => onSelect(listing)}
-            >
-              ← Back to listings
-            </button>
-          )}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -204,7 +216,22 @@ const DomainCard: React.FC<DomainCardProps> = ({
       {renderPriceHistory()}
       {renderDetailedInfo()}
 
-      {!isDetailed && (
+      {isDetailed ? (
+        <div className="mt-6 flex gap-4">
+          <button
+            onClick={() => onSelect(listing)}
+            className="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Back to listings
+          </button>
+          <button
+            onClick={handlePurchaseClick}
+            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Purchase Domain
+          </button>
+        </div>
+      ) : (
         <button
           onClick={() => onSelect(listing)}
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
@@ -212,6 +239,13 @@ const DomainCard: React.FC<DomainCardProps> = ({
           View Details
         </button>
       )}
+
+      <Checkout
+        listing={listing}
+        open={showCheckout}
+        onClose={handleCheckoutClose}
+        onConfirm={handlePurchaseComplete}
+      />
     </div>
   );
 };

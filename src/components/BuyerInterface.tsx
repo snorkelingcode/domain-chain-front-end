@@ -75,6 +75,11 @@ const BuyerInterface: React.FC = () => {
     );
   };
 
+  const handlePurchase = () => {
+    // Handle post-purchase actions like refreshing listings
+    setSelectedListing(null);
+  };
+
   const filteredListings = useMemo(() => {
     return MOCK_LISTINGS
       .filter(listing => {
@@ -92,6 +97,11 @@ const BuyerInterface: React.FC = () => {
 
         const price = parseFloat(listing.price);
         if (price < filters.priceRange.min || price > filters.priceRange.max) {
+          return false;
+        }
+
+        if (filters.verificationStatus.length > 0 && 
+            !filters.verificationStatus.includes(listing.verificationStatus)) {
           return false;
         }
 
@@ -122,6 +132,7 @@ const BuyerInterface: React.FC = () => {
           onFavorite={toggleFavorite}
           isFavorite={favorites.includes(selectedListing.id)}
           isDetailed={true}
+          onPurchase={handlePurchase}
         />
       </div>
     );
