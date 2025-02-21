@@ -17,8 +17,8 @@ function App() {
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Header Container */}
           <div className="w-full flex flex-col sm:flex-row sm:justify-between items-center gap-4 sm:gap-6">
-            {/* Logo - Visible only in buy mode */}
-            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} sm:order-1 order-1 w-1/3 flex justify-start`}>
+            {/* Logo */}
+            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} order-1 sm:order-none`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -64,14 +64,8 @@ function App() {
               </button>
             </div>
 
-            {/* Wallet Button for Desktop */}
-            <div className="hidden sm:block w-1/3 flex justify-end order-3">
-              <button 
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Connect Wallet
-              </button>
-            </div>
+            {/* Spacer for desktop layout */}
+            <div className="hidden sm:block w-32"></div>
           </div>
         </div>
         
