@@ -58,7 +58,7 @@ function App() {
 
               {/* Connect Wallet Button - Full width on mobile */}
               <button 
-                className="w-full sm:w-auto order-3 sm:order-none px-8 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full sm:w-auto order-3 sm:order-none px-24 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
