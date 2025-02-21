@@ -14,12 +14,12 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-1">
-        <div className="flex justify-center items-center h-16 my-8">
-          <div className="flex items-center gap-4">
+        <div className="flex justify-center items-center py-8">
+          <div className="flex items-center">
             <img 
-              src="/LogoHeader_5972X_1080Y.png" 
+              src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
-              className="h-8 w-auto"
+              className="h-12 w-auto mr-4"
             />
             <div className="inline-flex rounded-md shadow-sm" role="group">
               <button 
