@@ -17,8 +17,7 @@ import {
   Clock,
   ArrowUpRight,
   ArrowDownRight,
-  Heart,
-  ChevronLeft
+  Heart
 } from 'lucide-react';
 
 // Mock data
@@ -48,50 +47,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
   return (
     <div className="min-h-[calc(100vh-80px)] bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
-        {/* Mobile Header */}
-        <div className="sm:hidden flex items-center py-4">
-          <button
-            onClick={onBack}
-            className="flex items-center text-gray-600 hover:text-gray-800"
-          >
-            <ChevronLeft size={20} className="mr-1" />
-            Back to Marketplace
-          </button>
-        </div>
-
-        {/* Desktop Header */}
-        <div className="hidden sm:flex flex-col items-center py-3 sm:py-6">
-          <div className="w-full flex relative justify-between items-center">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <img 
-                src="/LogoHeader_Transparent_5972X_1080Y.png" 
-                alt="Domain Chain Logo" 
-                className="h-16 w-auto"
-              />
-            </div>
-            
-            {/* Mode Toggle Buttons */}
-            <div className="absolute left-1/2 -translate-x-1/2">
-              <div className="inline-flex rounded-md shadow-sm" role="group">
-                <button 
-                  type="button"
-                  onClick={onBack}
-                  className="px-4 py-2 text-sm font-medium border bg-white text-gray-900 border-gray-200 hover:bg-gray-100 rounded-l-lg"
-                >
-                  Buy Domain
-                </button>
-                <button 
-                  type="button"
-                  className="px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
-                >
-                  Dashboard
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Mobile Logo */}
         <div className="sm:hidden flex justify-center mb-4">
           <img 
@@ -101,6 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
           />
         </div>
 
+        {/* Rest of the Dashboard content remains the same */}
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4">
