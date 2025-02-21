@@ -166,9 +166,9 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="space-y-4">
+        <div className="p-6">
           {/* Domain Details */}
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-gray-50 p-4 rounded-lg mb-6">
             <h3 className="font-medium text-lg mb-2">{listing.domain}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
@@ -179,17 +179,15 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
           </div>
 
           {/* Purchase Steps */}
-          <div className="space-y-3">
-            <div className="flex items-start justify-center sm:justify-start sm:pl-4 gap-3">
-              <div>
-                <h4 className="font-medium flex items-center gap-3">
-                  <Shield className="text-blue-600" size={20} />
-                  Secure Transfer
-                </h4>
-                <p className="text-sm text-gray-600">
-                  Domain transfer is verified before completion
-                </p>
-              </div>
+          <div className="flex items-start justify-center sm:justify-start sm:pl-4 gap-3">
+            <div>
+              <h4 className="font-medium flex items-center gap-3">
+                <Shield className="text-blue-600" size={20} />
+                Secure Transfer
+              </h4>
+              <p className="text-sm text-gray-600">
+                Domain transfer is verified before completion
+              </p>
             </div>
           </div>
         </div>
