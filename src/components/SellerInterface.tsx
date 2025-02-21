@@ -94,17 +94,17 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
       {/* Main Content */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         {currentStep === 1 && (
-          <form onSubmit={handleDomainVerification} className="space-y-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Verify Domain Ownership</h2>
-              <img 
-                src="/LogoHeader_Transparent_5972X_1080Y.png" 
-                alt="Domain Chain Logo" 
-                className="h-16 w-auto"
-              />
-            </div>
-            
-            <div className="space-y-4">
+    <form onSubmit={handleDomainVerification} className="space-y-6">
+      <div className="flex justify-center mb-8">
+        <img 
+          src="/LogoHeader_Transparent_5972X_1080Y.png" 
+          alt="Domain Chain Logo" 
+          className="h-16 w-auto"
+        />
+      </div>
+      <h2 className="text-2xl font-bold mb-6">Verify Domain Ownership</h2>
+      
+      <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Domain Name</label>
                 <div className="relative">
@@ -143,7 +143,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                     <li>Our platform will verify domain ownership</li>
                     <li>Domain will be temporarily transferred to our escrow platform</li>
                     <li>New EPP code will be generated to prevent unauthorized transfers</li>
-                    <text>WARNING: Once you verify your domain the platform change your EPP code while in escrow. You may cancel your listing at any time for the new EPP code.</text>
                   </ol>
                 </AlertDescription>
               </Alert>
