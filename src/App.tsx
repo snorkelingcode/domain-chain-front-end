@@ -55,17 +55,23 @@ function App() {
                   </button>
                 </div>
               </div>
+            </div>
 
-              {/* Connect Wallet Button - Full width on mobile */}
+            {/* Wallet Button - Pushed to the right on desktop */}
+            <div className="hidden sm:block order-3">
               <button 
-                className="w-full sm:w-auto order-3 sm:order-none px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
             </div>
 
-            {/* Spacer for desktop layout */}
-            <div className="hidden sm:block w-32"></div>
+            {/* Connect Wallet Button for Mobile */}
+            <button 
+              className="w-full sm:hidden order-3 sm:order-none px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Connect Wallet
+            </button>
           </div>
         </div>
         
