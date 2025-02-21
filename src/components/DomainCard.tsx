@@ -1,9 +1,7 @@
-// src/components/DomainCard.tsx
 import React, { useState } from 'react';
 import { 
   Globe, 
   DollarSign, 
-  Clock, 
   Heart,
   ChartLine,
   Shield,
@@ -204,13 +202,6 @@ const DomainCard: React.FC<DomainCardProps> = ({
             <span className="font-medium">{listing.price} ETH</span>
           </div>
         </div>
-
-        <div className="flex items-center space-x-2">
-          <Clock className="text-gray-400" size={20} />
-          <span className="text-sm text-gray-600">
-            {listing.duration} days escrow period
-          </span>
-        </div>
       </div>
 
       {renderPriceHistory()}
@@ -220,13 +211,13 @@ const DomainCard: React.FC<DomainCardProps> = ({
         <div className="mt-6 flex gap-4">
           <button
             onClick={() => onSelect(listing)}
-            className="flex-1 bg-gray-100 text-gray-600 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex-1 bg-gray-100 text-gray-600 px-4 py-2 sm:py-3 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Back to listings
           </button>
           <button
             onClick={handlePurchaseClick}
-            className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex-1 bg-blue-600 text-white px-4 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Purchase Domain
           </button>
@@ -234,7 +225,7 @@ const DomainCard: React.FC<DomainCardProps> = ({
       ) : (
         <button
           onClick={() => onSelect(listing)}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors mt-4"
+          className="w-full bg-blue-600 text-white py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors mt-4"
         >
           View Details
         </button>

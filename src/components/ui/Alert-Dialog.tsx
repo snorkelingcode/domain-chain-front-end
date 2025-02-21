@@ -48,7 +48,7 @@ export const AlertDialog: React.FC<AlertDialogProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 sm:p-0">
       <div className="relative" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
