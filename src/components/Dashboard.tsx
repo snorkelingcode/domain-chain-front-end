@@ -60,21 +60,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden sm:flex w-full relative justify-center items-center py-6">
-          {/* Back Button */}
-          <button
-            onClick={onBack}
-            className="absolute left-0 text-blue-600 hover:text-blue-700 font-medium"
-          >
-            Return to Marketplace
-          </button>
+        <div className="hidden sm:flex w-full relative justify-between items-center py-6">
+          {/* Placeholder for layout balance */}
+          <div className="w-24"></div>
           
           {/* Centered Logo */}
-          <div>
+          <div className="absolute left-1/2 -translate-x-1/2">
             <img 
               src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
-              className={`${onBack ? 'flex-shrink-0' : 'invisible'} h-16 w-auto`}
+              className="h-16 w-auto"
             />
           </div>
         </div>
