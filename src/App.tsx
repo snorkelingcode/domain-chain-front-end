@@ -3,11 +3,20 @@ import BuyerInterface from './components/BuyerInterface';
 import SellerInterface from './components/SellerInterface';
 import Dashboard from './components/Dashboard';
 import { useEscrowContract } from './hooks/useEscrowContract';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/Alert-Dialog';
+import { LogOut } from 'lucide-react';
 
 function App() {
   const [mode, setMode] = useState<'buy' | 'sell' | 'dashboard'>('buy');
   const [newListingTrigger, setNewListingTrigger] = useState(0);
-  const { connectWallet, isConnected } = useEscrowContract();
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const { 
+    connectWallet, 
+    disconnectWallet,
+    loading, 
+    isConnected,
+    account 
+  } = useEscrowContract();
 
   const handleListingPublished = () => {
     setMode('buy');
@@ -26,8 +35,19 @@ function App() {
     }
   };
 
+  const handleSignOut = () => {
+    disconnectWallet();
+    setMode('buy');
+    setShowSignOutDialog(false);
+  };
+
   const handleDashboardExit = () => {
     setMode('buy');
+  };
+
+  // Format wallet address for display
+  const formatAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
@@ -74,13 +94,31 @@ function App() {
               </div>
             </div>
 
-            {/* Connect Wallet/Dashboard Button */}
-            <button 
-              onClick={handleConnectWallet}
-              className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {isConnected ? 'Dashboard' : 'Connect Wallet'}
-            </button>
+            {/* Wallet Section */}
+            {isConnected ? (
+              <div className="w-full flex gap-2">
+                <button 
+                  onClick={() => setMode('dashboard')}
+                  className="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {account ? formatAddress(account) : 'Dashboard'}
+                </button>
+                <button 
+                  onClick={() => setShowSignOutDialog(true)}
+                  className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={handleConnectWallet}
+                disabled={loading}
+                className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+              >
+                {loading ? 'Connecting...' : 'Connect Wallet'}
+              </button>
+            )}
           </div>
 
           {/* Desktop Layout */}
@@ -122,13 +160,31 @@ function App() {
               </div>
             </div>
 
-            {/* Connect Wallet/Dashboard Button */}
-            <button 
-              onClick={handleConnectWallet}
-              className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              {isConnected ? 'Dashboard' : 'Connect Wallet'}
-            </button>
+            {/* Wallet Section */}
+            {isConnected ? (
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setMode('dashboard')}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  {account ? formatAddress(account) : 'Dashboard'}
+                </button>
+                <button 
+                  onClick={() => setShowSignOutDialog(true)}
+                  className="p-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  <LogOut size={16} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={handleConnectWallet}
+                disabled={loading}
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+              >
+                {loading ? 'Connecting...' : 'Connect Wallet'}
+              </button>
+            )}
           </div>
         </div>
         
@@ -141,6 +197,26 @@ function App() {
           <SellerInterface onListingPublished={handleListingPublished} />
         )}
       </div>
+
+      {/* Sign Out Confirmation Dialog */}
+      <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign Out</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to sign out?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowSignOutDialog(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOut}>
+              Sign Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
