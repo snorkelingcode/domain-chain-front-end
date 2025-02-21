@@ -37,7 +37,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md">
+      <AlertDialogContent className="max-w-md mx-4 sm:mx-auto">
         <AlertDialogHeader>
           <AlertDialogTitle>Confirm Domain Purchase</AlertDialogTitle>
           <AlertDialogDescription>
