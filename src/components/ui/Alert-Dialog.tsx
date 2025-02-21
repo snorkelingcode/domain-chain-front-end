@@ -17,6 +17,7 @@ interface AlertDialogHeaderProps {
 
 interface AlertDialogTitleProps {
   children: React.ReactNode;
+  className?: string; // Added className prop
 }
 
 interface AlertDialogDescriptionProps {
@@ -73,9 +74,10 @@ export const AlertDialogHeader: React.FC<AlertDialogHeaderProps> = ({
 );
 
 export const AlertDialogTitle: React.FC<AlertDialogTitleProps> = ({ 
-  children 
+  children,
+  className = ""
 }) => (
-  <h2 className="text-xl font-semibold">
+  <h2 className={`text-xl font-semibold ${className}`}>
     {children}
   </h2>
 );
@@ -91,10 +93,8 @@ export const AlertDialogDescription: React.FC<AlertDialogDescriptionProps> = ({
 export const AlertDialogFooter: React.FC<AlertDialogFooterProps> = ({ 
   children 
 }) => (
-  <div className="flex justify-center gap-3 p-6 pt-4 border-t">
-    <div className="flex gap-3">
-      {children}
-    </div>
+  <div className="flex justify-end gap-3 p-6 pt-4 border-t">
+    {children}
   </div>
 );
 
@@ -107,7 +107,7 @@ export const AlertDialogAction: React.FC<AlertDialogActionProps> = ({
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-8 py-2 rounded-lg text-sm font-medium min-w-[140px] ${
+    className={`px-4 py-2 rounded-lg text-sm font-medium min-w-[100px] ${
       disabled ? 'bg-gray-300 cursor-not-allowed' : className || 'bg-blue-600 text-white hover:bg-blue-700'
     }`}
   >
@@ -121,7 +121,7 @@ export const AlertDialogCancel: React.FC<AlertDialogCancelProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className="px-8 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 min-w-[140px]"
+    className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 min-w-[100px]"
   >
     {children}
   </button>
