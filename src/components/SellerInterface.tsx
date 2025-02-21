@@ -29,7 +29,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
     e.preventDefault();
     setLoading(true);
     
-    // Simulate domain verification
     setTimeout(() => {
       setIsVerified(true);
       setLoading(false);
@@ -59,46 +58,43 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      {/* Progress Steps */}
-      <div className="flex justify-between mb-8">
-        {[
-          { number: 1, title: 'Verify Domain' },
-          { number: 2, title: 'Create Escrow' },
-          { number: 3, title: 'Platform Transfer' },
-          { number: 4, title: 'Complete Sale' }
-        ].map((step, index, steps) => (
-          <div key={step.number} className="flex items-center">
-            <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              currentStep >= step.number ? 'bg-blue-600 text-white' : 'bg-gray-200'
-            }`}>
-              {step.number}
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 py-4">
+      {/* Progress Steps - Compact for mobile */}
+      <div className="flex justify-between mb-6">
+        <div className="grid grid-cols-4 w-full gap-1 sm:gap-4">
+          {[
+            { number: 1, title: 'Verify' },
+            { number: 2, title: 'Escrow' },
+            { number: 3, title: 'Transfer' },
+            { number: 4, title: 'Complete' }
+          ].map((step) => (
+            <div key={step.number} className="flex flex-col items-center">
+              <div className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full ${
+                currentStep >= step.number ? 'bg-blue-600 text-white' : 'bg-gray-200'
+              }`}>
+                <span className="text-xs sm:text-sm">{step.number}</span>
+              </div>
+              <span className={`mt-1 text-xs sm:text-sm text-center ${
+                currentStep >= step.number ? 'text-blue-600' : 'text-gray-500'
+              }`}>
+                {step.title}
+              </span>
             </div>
-            <span className={`ml-2 ${
-              currentStep >= step.number ? 'text-blue-600' : 'text-gray-500'
-            }`}>
-              {step.title}
-            </span>
-            {index < steps.length - 1 && (
-              <ArrowRight className={`mx-4 ${
-                currentStep > step.number ? 'text-blue-600' : 'text-gray-300'
-              }`} size={20} />
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-lg p-4 sm:p-6">
         {currentStep === 1 && (
           <form onSubmit={handleDomainVerification} className="space-y-6">
-            <div className="flex justify-between items-start mb-6">
-              <h2 className="text-2xl font-bold">Verify Domain Ownership</h2>
-              <div className="shrink-0">
+            <div className="flex flex-col items-center sm:items-start gap-4 mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Verify Domain Ownership</h2>
+              <div className="w-full flex justify-center sm:justify-end">
                 <img 
                   src="/LogoHeader_Transparent_5972X_1080Y.png" 
                   alt="Domain Chain Logo" 
-                  className="h-16 w-auto"
+                  className="h-8 sm:h-12 w-auto"
                 />
               </div>
             </div>
@@ -107,13 +103,13 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               <div>
                 <label className="block text-sm font-medium mb-1">Domain Name</label>
                 <div className="relative">
-                  <Globe className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <Globe className="absolute left-3 top-2.5 text-gray-400" size={18} />
                   <input
                     type="text"
                     value={domainName}
                     onChange={(e) => setDomainName(e.target.value)}
                     placeholder="example.com"
-                    className="pl-10 w-full p-2 border rounded-lg"
+                    className="pl-10 w-full p-2 border rounded-lg text-sm"
                     required
                   />
                 </div>
@@ -122,28 +118,28 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               <div>
                 <label className="block text-sm font-medium mb-1">EPP/Authorization Code</label>
                 <div className="relative">
-                  <ShieldCheck className="absolute left-3 top-3 text-gray-400" size={20} />
+                  <ShieldCheck className="absolute left-3 top-2.5 text-gray-400" size={18} />
                   <input
                     type="text"
                     value={eppCode}
                     onChange={(e) => setEppCode(e.target.value)}
                     placeholder="Enter EPP code"
-                    className="pl-10 w-full p-2 border rounded-lg"
+                    className="pl-10 w-full p-2 border rounded-lg text-sm"
                     required
                   />
                 </div>
               </div>
 
-              <Alert>
-                <AlertDescription>
-                  <strong>Domain Verification Process:</strong>
-                  <ol className="list-decimal ml-4 space-y-2 mt-2">
+              <Alert className="bg-blue-50 border-blue-100">
+                <AlertDescription className="text-blue-600 text-sm">
+                  <div className="font-medium mb-2">Domain Verification Process:</div>
+                  <ol className="list-decimal ml-4 space-y-1">
                     <li>Enter your domain name and EPP code</li>
                     <li>Our platform will verify domain ownership</li>
                     <li>Domain will be temporarily transferred to our escrow platform</li>
                     <li>New EPP code will be generated to prevent unauthorized transfers</li>
                   </ol>
-                  <p className="mt-2 text-red-600">
+                  <p className="mt-2 text-red-600 text-sm font-medium">
                     WARNING: Once you verify your domain the platform will change your EPP code while in escrow. 
                     You may cancel your listing at any time for the new EPP code.
                   </p>
@@ -154,7 +150,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+              className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 text-sm font-medium"
             >
               {loading ? 'Verifying...' : 'Verify Domain'}
             </button>
