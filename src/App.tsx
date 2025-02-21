@@ -17,15 +17,13 @@ function App() {
         <div className="flex flex-col items-center py-6">
           <div className="w-full relative flex justify-between items-center">
             {/* Logo */}
-            {mode === 'buy' && (
-              <div className="flex-shrink-0">
-                <img 
-                  src="/LogoHeader_Transparent_5972X_1080Y.png" 
-                  alt="Domain Chain Logo" 
-                  className="h-16 w-auto"
-                />
-              </div>
-            )}
+            <div className={mode === 'buy' ? 'flex-shrink-0' : 'invisible'}>
+              <img 
+                src="/LogoHeader_Transparent_5972X_1080Y.png" 
+                alt="Domain Chain Logo" 
+                className="h-16 w-auto"
+              />
+            </div>
             
             {/* Mode Toggle Buttons */}
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -55,9 +53,9 @@ function App() {
               </div>
             </div>
 
-            {/* Connect Wallet Button */}
+            {/* Connect Wallet Button - Now matches mode button styling */}
             <button 
-              className="flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-3 py-1.5 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Connect Wallet
             </button>
