@@ -92,7 +92,9 @@ export const AlertDialogFooter: React.FC<AlertDialogFooterProps> = ({
   children 
 }) => (
   <div className="flex justify-end gap-3 p-6 pt-4 border-t">
-    {children}
+    <div className="flex gap-3 w-full sm:w-auto">
+      {children}
+    </div>
   </div>
 );
 
@@ -105,7 +107,7 @@ export const AlertDialogAction: React.FC<AlertDialogActionProps> = ({
   <button
     onClick={onClick}
     disabled={disabled}
-    className={`px-4 py-2 rounded-lg text-sm font-medium ${
+    className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium min-w-[120px] ${
       disabled ? 'bg-gray-300 cursor-not-allowed' : className || 'bg-blue-600 text-white hover:bg-blue-700'
     }`}
   >
@@ -119,7 +121,7 @@ export const AlertDialogCancel: React.FC<AlertDialogCancelProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200"
+    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 min-w-[120px]"
   >
     {children}
   </button>
