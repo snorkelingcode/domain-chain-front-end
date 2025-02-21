@@ -58,7 +58,7 @@ function App() {
           {/* Mobile Layout */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
             {/* Logo */}
-            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'}`}>
+            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'hidden'}`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -87,10 +87,18 @@ function App() {
                     mode === 'sell' 
                       ? 'bg-blue-600 text-white border-blue-600' 
                       : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-r-lg`}
+                  } ${mode === 'dashboard' ? '' : 'rounded-r-lg'}`}
                 >
                   Sell Domain
                 </button>
+                {mode === 'dashboard' && (
+                  <button 
+                    type="button"
+                    className="flex-1 px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
+                  >
+                    Dashboard
+                  </button>
+                )}
               </div>
             </div>
 
@@ -124,7 +132,7 @@ function App() {
           {/* Desktop Layout */}
           <div className="hidden sm:flex w-full relative justify-between items-center">
             {/* Logo */}
-            <div className={mode === 'buy' ? 'flex-shrink-0' : 'invisible'}>
+            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'invisible'}`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -153,10 +161,18 @@ function App() {
                     mode === 'sell' 
                       ? 'bg-blue-600 text-white border-blue-600' 
                       : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-r-lg`}
+                  } ${mode === 'dashboard' ? '' : 'rounded-r-lg'}`}
                 >
                   Sell Domain
                 </button>
+                {mode === 'dashboard' && (
+                  <button 
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
+                  >
+                    Dashboard
+                  </button>
+                )}
               </div>
             </div>
 
@@ -190,7 +206,7 @@ function App() {
         
         {/* Main Content */}
         {mode === 'dashboard' ? (
-          <Dashboard onBack={handleDashboardExit} />
+          <Dashboard onBack={() => setMode('buy')} />
         ) : mode === 'buy' ? (
           <BuyerInterface key={newListingTrigger} />
         ) : (
