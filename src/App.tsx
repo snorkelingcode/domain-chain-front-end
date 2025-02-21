@@ -13,11 +13,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-1">
-        <div className="relative flex justify-center items-center py-8">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+      <div className="container mx-auto px-1 py-9 space-y-1">
+      <div className="flex justify-center items-center h-16 my-2">
+      <div className="inline-flex rounded-md shadow-sm mx-auto" role="group">
             <img 
-              src="/logo.png" 
+              src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
               className="h-12 w-auto"
             />
