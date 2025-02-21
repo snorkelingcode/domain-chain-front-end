@@ -88,15 +88,8 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
       <div className="bg-white rounded-lg p-4 sm:p-6">
         {currentStep === 1 && (
           <form onSubmit={handleDomainVerification} className="space-y-6">
-            <div className="flex flex-col items-center sm:items-start gap-4 mb-6">
+            <div className="flex flex-col items-center sm:items-start mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Verify Domain Ownership</h2>
-              <div className="w-full flex justify-center sm:justify-end">
-                <img 
-                  src="/LogoHeader_Transparent_5972X_1080Y.png" 
-                  alt="Domain Chain Logo" 
-                  className="h-8 sm:h-12 w-auto"
-                />
-              </div>
             </div>
             
             <div className="space-y-4">
