@@ -131,17 +131,18 @@ const BuyerInterface: React.FC = () => {
   return (
     <div className="container mx-auto px-4 pt-4">
       <div className="flex flex-col items-center">
-        {/* Search Bar */}
-        <div className="w-full max-w-2xl">
-          <DomainSearch 
-            onSearch={handleSearch}
-            onFilterChange={handleFilterChange}
-          />
-        </div>
-        
-        {/* View Controls */}
-        <div className="flex justify-end w-full max-w-2xl mt-4">
-          <div className="flex space-x-2">
+        {/* Search and Controls Container */}
+        <div className="w-full max-w-2xl flex items-center justify-between gap-4">
+          {/* Search Bar */}
+          <div className="flex-1">
+            <DomainSearch 
+              onSearch={handleSearch}
+              onFilterChange={handleFilterChange}
+            />
+          </div>
+          
+          {/* View Controls */}
+          <div className="flex items-center space-x-2">
             <button
               onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
               className={`p-2 rounded-lg ${

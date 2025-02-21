@@ -10,7 +10,6 @@ import {
 import { Alert, AlertDescription } from './alert';
 import { useEscrowContract } from '../hooks/useEscrowContract';
 
-// Define the prop interface
 interface SellerInterfaceProps {
   onListingPublished: () => void;
 }
@@ -42,7 +41,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
     e.preventDefault();
     setLoading(true);
     try {
-      // Simulate escrow creation
       await createEscrow({
         domainName,
         price,
@@ -57,7 +55,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
   };
 
   const handleListingComplete = () => {
-    // Call the callback to switch to buy mode and potentially refresh listings
     onListingPublished();
   };
 
@@ -94,17 +91,19 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
       {/* Main Content */}
       <div className="bg-white rounded-lg shadow-lg p-6">
         {currentStep === 1 && (
-    <form onSubmit={handleDomainVerification} className="space-y-6">
-      <div className="flex justify-center mb-8">
-        <img 
-          src="/LogoHeader_Transparent_5972X_1080Y.png" 
-          alt="Domain Chain Logo" 
-          className="h-16 w-auto"
-        />
-      </div>
-      <h2 className="text-2xl font-bold mb-6">Verify Domain Ownership</h2>
-      
-      <div className="space-y-4">
+          <form onSubmit={handleDomainVerification} className="space-y-6">
+            <div className="flex justify-between items-start mb-6">
+              <h2 className="text-2xl font-bold">Verify Domain Ownership</h2>
+              <div className="shrink-0">
+                <img 
+                  src="/LogoHeader_Transparent_5972X_1080Y.png" 
+                  alt="Domain Chain Logo" 
+                  className="h-16 w-auto"
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Domain Name</label>
                 <div className="relative">
@@ -144,6 +143,10 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                     <li>Domain will be temporarily transferred to our escrow platform</li>
                     <li>New EPP code will be generated to prevent unauthorized transfers</li>
                   </ol>
+                  <p className="mt-2 text-red-600">
+                    WARNING: Once you verify your domain the platform will change your EPP code while in escrow. 
+                    You may cancel your listing at any time for the new EPP code.
+                  </p>
                 </AlertDescription>
               </Alert>
             </div>
