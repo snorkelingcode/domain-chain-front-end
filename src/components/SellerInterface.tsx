@@ -140,7 +140,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                       <li>New EPP code will be generated to prevent unauthorized transfers</li>
                     </ol>
                     <p className="mt-2 text-red-600 text-sm font-medium">
-                      WARNING: Once you verify your domain the platform will change your EPP code while in escrow. 
+                      WARNING: Once you verify your domain, the platform will change your EPP code while in escrow. 
                       You may cancel your listing at any time for the new EPP code.
                     </p>
                   </AlertDescription>
