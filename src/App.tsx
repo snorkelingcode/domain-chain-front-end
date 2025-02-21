@@ -16,20 +16,22 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-1">
-        <div className="relative flex justify-center items-center py-8">
-          {/* Logo only shown in buy mode */}
-          {showHeaderLogo && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2">
+      <div className="container mx-auto px-4">
+        {/* Reduced vertical padding and improved responsive layout */}
+        <div className="relative flex items-center justify-between py-4">
+          {/* Logo with responsive positioning */}
+          {mode === 'buy' && (
+            <div className="flex-shrink-0 mr-4">
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
-                className="h-16 w-auto"
+                className="h-12 w-auto" // Slightly smaller height
               />
             </div>
           )}
           
-          <div className="inline-flex rounded-md shadow-sm" role="group">
+          {/* Centered buttons container */}
+          <div className={`inline-flex rounded-md shadow-sm ${mode === 'buy' ? 'ml-auto' : ''}`}>
             <button 
               type="button"
               onClick={() => setMode('buy')}

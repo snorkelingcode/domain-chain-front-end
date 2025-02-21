@@ -89,34 +89,34 @@ const DomainSearch: React.FC<DomainSearchProps> = ({ onSearch, onFilterChange })
   };
 
   return (
-    <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
-        <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-        <input
-          type="text"
-          value={searchValue}
-          placeholder="Search domains..."
-          className="pl-10 pr-24 w-full p-2 border rounded-lg"
-          onChange={handleSearchChange}
-        />
-        <div className="absolute right-3 top-2 flex items-center space-x-2">
-          {searchValue && (
-            <button
-              onClick={clearSearch}
-              className="p-1 hover:bg-gray-100 rounded-full"
-            >
-              <X size={20} className="text-gray-400" />
-            </button>
-          )}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
-          >
-            <Filter size={20} />
-          </button>
-        </div>
-      </div>
+        <div className="space-y-4">
+          {/* Search Bar with max-width */}
+          <div className="relative max-w-2xl mx-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input
+              type="text"
+              value={searchValue}
+              placeholder="Search domains..."
+              className="pl-10 pr-24 w-full p-2 border rounded-lg"
+              onChange={handleSearchChange}
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-2">
+              {searchValue && (
+                <button
+                  onClick={clearSearch}
+                  className="p-1 hover:bg-gray-100 rounded-full"
+                >
+                  <X size={20} className="text-gray-400" />
+                </button>
+              )}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                <Filter size={20} />
+              </button>
+            </div>
+          </div>
 
       {/* Filters Panel */}
       {showFilters && (
