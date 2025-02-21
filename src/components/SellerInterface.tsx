@@ -7,8 +7,9 @@ import {
   Globe, 
   ShieldCheck
 } from 'lucide-react';
-import { Alert, AlertDescription } from './alert';
+
 import { useEscrowContract } from '../hooks/useEscrowContract';
+import { Alert, AlertDescription } from '../components/alert';
 
 interface SellerInterfaceProps {
   onListingPublished: () => void;
