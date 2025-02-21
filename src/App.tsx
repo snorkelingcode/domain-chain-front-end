@@ -64,8 +64,14 @@ function App() {
               </button>
             </div>
 
-            {/* Spacer for desktop layout */}
-            <div className="hidden sm:block w-32"></div>
+            {/* Wallet Button for Desktop - Positioned further right */}
+            <div className="hidden sm:block ml-auto order-3">
+              <button 
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Connect Wallet
+              </button>
+            </div>
           </div>
         </div>
         
