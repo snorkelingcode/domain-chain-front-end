@@ -55,8 +55,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
             className="h-12 w-auto"
           />
         </div>
-
-        {/* Rest of the Dashboard content remains the same */}
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4">
