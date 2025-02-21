@@ -15,7 +15,7 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-1">
         <div className="relative flex justify-center items-center py-8">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+          <div className="absolute left-0 top-1 -translate-y-1/2">
             <img 
               src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
