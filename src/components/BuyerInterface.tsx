@@ -129,12 +129,12 @@ const BuyerInterface: React.FC = () => {
 
   // Main listings view
   return (
-    <div className="container mx-auto px-2 sm:px-4 pt-2 sm:pt-4">
-      <div className="flex flex-col items-center">
-        {/* Search and Controls Container */}
-        <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
+    <div className="flex flex-col">
+      {/* Search Bar and Controls Container */}
+      <div className="px-4 py-4 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center gap-4">
           {/* Search Bar */}
-          <div className="w-full flex-1">
+          <div className="w-full">
             <DomainSearch 
               onSearch={handleSearch}
               onFilterChange={handleFilterChange}
@@ -142,7 +142,7 @@ const BuyerInterface: React.FC = () => {
           </div>
           
           {/* View Controls */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 shrink-0">
             <button
               onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
               className={`p-2 rounded-lg ${
@@ -161,9 +161,11 @@ const BuyerInterface: React.FC = () => {
             </button>
           </div>
         </div>
-  
-        {/* Domain Listings */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-4 sm:mt-6 w-full">
+      </div>
+
+      {/* Domain Listings */}
+      <div className="max-w-7xl mx-auto w-full px-4 py-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredListings.map(listing => (
             <DomainCard
               key={listing.id}
@@ -174,7 +176,7 @@ const BuyerInterface: React.FC = () => {
             />
           ))}
         </div>
-  
+
         {filteredListings.length === 0 && (
           <div className="text-center py-8 text-gray-500">
             No domains found matching your criteria
