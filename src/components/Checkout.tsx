@@ -146,7 +146,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={onConfirm}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="flex-1 bg-blue-600 hover:bg-blue-700"
             >
               Return to Listings
             </AlertDialogAction>
@@ -195,11 +195,13 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onClose} className="flex-1">
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handlePurchase}
             disabled={isProcessing}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="flex-1 bg-blue-600 hover:bg-blue-700"
           >
             {isProcessing ? 'Processing...' : `Purchase for ${listing.price} ETH`}
           </AlertDialogAction>
