@@ -17,7 +17,7 @@ function App() {
         <div className="flex justify-center items-center h-16 my-8">
           <div className="flex items-center gap-4">
             <img 
-              src="/logo.png" 
+              src="/LogoHeader_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
               className="h-8 w-auto"
             />
