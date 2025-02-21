@@ -7,7 +7,6 @@ import DomainSearch from './DomainSearch';
 import DomainCard from './DomainCard';
 import type { DomainListing, SearchFilters } from '../types/domain';
 
-// Expanded mock listings with more details
 const MOCK_LISTINGS: DomainListing[] = [
   {
     id: '1',
@@ -79,22 +78,18 @@ const BuyerInterface: React.FC = () => {
   const filteredListings = useMemo(() => {
     return MOCK_LISTINGS
       .filter(listing => {
-        // Favorites filter
         if (showFavoritesOnly && !favorites.includes(listing.id)) {
           return false;
         }
         
-        // Search query filter
         if (searchQuery && !listing.domain.toLowerCase().includes(searchQuery.toLowerCase())) {
           return false;
         }
 
-        // TLD filter
         if (filters.tld.length > 0 && !filters.tld.includes(listing.tld || '')) {
           return false;
         }
 
-        // Price range filter
         const price = parseFloat(listing.price);
         if (price < filters.priceRange.min || price > filters.priceRange.max) {
           return false;
@@ -120,7 +115,7 @@ const BuyerInterface: React.FC = () => {
   // Selected listing view
   if (selectedListing) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4">
         <DomainCard 
           listing={selectedListing}
           onSelect={() => setSelectedListing(null)}
@@ -134,53 +129,57 @@ const BuyerInterface: React.FC = () => {
 
   // Main listings view
   return (
-    <div className="container mx-auto px-4 py-4"> {/* Reduced padding */}
-      {/* Search and Filters */}
-      <div className="flex items-center justify-between mb-6"> {/* Added margin-bottom */}
-        <div className="flex-1 mr-4">
+    <div className="container mx-auto px-4 pt-4">
+      <div className="flex flex-col items-center">
+        {/* Search Bar */}
+        <div className="w-full max-w-2xl">
           <DomainSearch 
             onSearch={handleSearch}
             onFilterChange={handleFilterChange}
           />
         </div>
-        <div className="flex space-x-2">
-          <button
-            onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-            className={`p-2 rounded-lg ${
-              showFavoritesOnly ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            <Heart size={20} />
-          </button>
-          <button
-            onClick={() => setShowFavoritesOnly(false)}
-            className={`p-2 rounded-lg ${
-              !showFavoritesOnly ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            <LayoutGrid size={20} />
-          </button>
+        
+        {/* View Controls */}
+        <div className="flex justify-end w-full max-w-2xl mt-4">
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+              className={`p-2 rounded-lg ${
+                showFavoritesOnly ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              <Heart size={20} />
+            </button>
+            <button
+              onClick={() => setShowFavoritesOnly(false)}
+              className={`p-2 rounded-lg ${
+                !showFavoritesOnly ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600'
+              }`}
+            >
+              <LayoutGrid size={20} />
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Domain Listings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {filteredListings.map(listing => (
-          <DomainCard
-            key={listing.id}
-            listing={listing}
-            onSelect={() => setSelectedListing(listing)}
-            onFavorite={toggleFavorite}
-            isFavorite={favorites.includes(listing.id)}
-          />
-        ))}
-      </div>
-
-      {filteredListings.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No domains found matching your criteria
+        {/* Domain Listings */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 w-full">
+          {filteredListings.map(listing => (
+            <DomainCard
+              key={listing.id}
+              listing={listing}
+              onSelect={() => setSelectedListing(listing)}
+              onFavorite={toggleFavorite}
+              isFavorite={favorites.includes(listing.id)}
+            />
+          ))}
         </div>
-      )}
+
+        {filteredListings.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            No domains found matching your criteria
+          </div>
+        )}
+      </div>
     </div>
   );
 };
