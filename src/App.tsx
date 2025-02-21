@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
 import BuyerInterface from './components/BuyerInterface';
 import SellerInterface from './components/SellerInterface';
+import Dashboard from './components/Dashboard';
+import { useEscrowContract } from './hooks/useEscrowContract';
 
 function App() {
-  const [mode, setMode] = useState<'buy' | 'sell'>('buy');
+  const [mode, setMode] = useState<'buy' | 'sell' | 'dashboard'>('buy');
   const [newListingTrigger, setNewListingTrigger] = useState(0);
+  const { connectWallet, isConnected } = useEscrowContract();
 
   const handleListingPublished = () => {
     setMode('buy');
     setNewListingTrigger(prev => prev + 1);
+  };
+
+  const handleConnectWallet = async () => {
+    if (!isConnected) {
+      try {
+        await connectWallet();
+      } catch (error) {
+        console.error('Failed to connect wallet:', error);
+      }
+    } else {
+      setMode('dashboard');
+    }
+  };
+
+  const handleDashboardExit = () => {
+    setMode('buy');
   };
 
   return (
@@ -55,11 +74,12 @@ function App() {
               </div>
             </div>
 
-            {/* Connect Wallet Button */}
+            {/* Connect Wallet/Dashboard Button */}
             <button 
+              onClick={handleConnectWallet}
               className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Connect Wallet
+              {isConnected ? 'Dashboard' : 'Connect Wallet'}
             </button>
           </div>
 
@@ -102,16 +122,20 @@ function App() {
               </div>
             </div>
 
-            {/* Connect Wallet Button */}
+            {/* Connect Wallet/Dashboard Button */}
             <button 
+              onClick={handleConnectWallet}
               className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Connect Wallet
+              {isConnected ? 'Dashboard' : 'Connect Wallet'}
             </button>
           </div>
         </div>
         
-        {mode === 'buy' ? (
+        {/* Main Content */}
+        {mode === 'dashboard' ? (
+          <Dashboard onBack={handleDashboardExit} />
+        ) : mode === 'buy' ? (
           <BuyerInterface key={newListingTrigger} />
         ) : (
           <SellerInterface onListingPublished={handleListingPublished} />
