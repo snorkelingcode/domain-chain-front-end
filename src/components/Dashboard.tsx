@@ -61,13 +61,29 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
 
         {/* Desktop Header */}
         <div className="hidden sm:flex items-center justify-between py-6">
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          {/* Logo - Desktop */}
+          <div className="flex-shrink-0">
+            <img 
+              src="/LogoHeader_Transparent_5972X_1080Y.png" 
+              alt="Domain Chain Logo" 
+              className="h-16 w-auto"
+            />
+          </div>
           <button
             onClick={onBack}
             className="text-blue-600 hover:text-blue-700 font-medium"
           >
             Return to Marketplace
           </button>
+        </div>
+
+        {/* Mobile Logo */}
+        <div className="sm:hidden flex justify-center mb-4">
+          <img 
+            src="/LogoHeader_Transparent_5972X_1080Y.png" 
+            alt="Domain Chain Logo" 
+            className="h-12 w-auto"
+          />
         </div>
 
         {/* Overview Cards */}
