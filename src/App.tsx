@@ -105,7 +105,7 @@ function App() {
                 </button>
                 <button 
                   onClick={() => setShowSignOutDialog(true)}
-                  className="px-4 py-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="px-4 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                 >
                   <LogOut size={16} />
                 </button>
@@ -171,7 +171,7 @@ function App() {
                 </button>
                 <button 
                   onClick={() => setShowSignOutDialog(true)}
-                  className="p-2 text-sm font-medium bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="p-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
                 >
                   <LogOut size={16} />
                 </button>
@@ -211,7 +211,10 @@ function App() {
             <AlertDialogCancel onClick={() => setShowSignOutDialog(false)}>
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction onClick={handleSignOut}>
+            <AlertDialogAction 
+              onClick={handleSignOut}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
               Sign Out
             </AlertDialogAction>
           </AlertDialogFooter>
