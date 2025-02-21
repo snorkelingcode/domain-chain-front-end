@@ -16,9 +16,9 @@ function App() {
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Header Container */}
-          <div className="w-full flex flex-col sm:flex-row sm:justify-between items-center gap-4 sm:gap-6">
-            {/* Logo */}
-            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} order-1 sm:order-none`}>
+          <div className="w-full grid grid-cols-3 items-center gap-4 sm:gap-6">
+            {/* Logo - Left Side */}
+            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} justify-self-start`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -26,52 +26,42 @@ function App() {
               />
             </div>
             
-            {/* Center Container for Mobile Layout */}
-            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3 order-2 sm:order-none">
-              {/* Mode Toggle Buttons */}
-              <div className="w-full sm:w-auto">
-                <div className="flex rounded-md shadow-sm w-full sm:w-auto" role="group">
-                  <button 
-                    type="button"
-                    onClick={() => setMode('buy')}
-                    className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
-                      mode === 'buy' 
-                        ? 'bg-blue-600 text-white border-blue-600' 
-                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                    } rounded-l-lg`}
-                  >
-                    Buy Domain
-                  </button>
-                  <button 
-                    type="button"
-                    onClick={() => setMode('sell')}
-                    className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
-                      mode === 'sell' 
-                        ? 'bg-blue-600 text-white border-blue-600' 
-                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                    } rounded-r-lg`}
-                  >
-                    Sell Domain
-                  </button>
-                </div>
+            {/* Mode Toggle Buttons - Centered */}
+            <div className="justify-self-center">
+              <div className="flex rounded-md shadow-sm" role="group">
+                <button 
+                  type="button"
+                  onClick={() => setMode('buy')}
+                  className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
+                    mode === 'buy' 
+                      ? 'bg-blue-600 text-white border-blue-600' 
+                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
+                  } rounded-l-lg`}
+                >
+                  Buy Domain
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => setMode('sell')}
+                  className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
+                    mode === 'sell' 
+                      ? 'bg-blue-600 text-white border-blue-600' 
+                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
+                  } rounded-r-lg`}
+                >
+                  Sell Domain
+                </button>
               </div>
             </div>
 
-            {/* Wallet Button - Pushed to the right on desktop */}
-            <div className="hidden sm:block order-3">
+            {/* Wallet Button - Right Side */}
+            <div className="justify-self-end">
               <button 
                 className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
             </div>
-
-            {/* Connect Wallet Button for Mobile */}
-            <button 
-              className="w-full sm:hidden order-3 sm:order-none px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Connect Wallet
-            </button>
           </div>
         </div>
         
