@@ -58,7 +58,7 @@ function App() {
           {/* Mobile Layout */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
             {/* Logo */}
-            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'hidden'}`}>
+            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'}`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
