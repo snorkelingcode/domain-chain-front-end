@@ -9,7 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from './ui/Alert-Dialog';
-import { Shield, AlertCircle } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import type { DomainListing } from '../types/domain';
 
 interface CheckoutProps {
@@ -37,7 +37,7 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
   return (
     <AlertDialog open={open} onOpenChange={onClose}>
-      <AlertDialogContent className="max-w-md mx-4">
+      <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle>Confirm Domain Purchase</AlertDialogTitle>
           <AlertDialogDescription>
@@ -68,14 +68,6 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
                 <p className="text-sm text-gray-600">Domain transfer is verified before completion</p>
               </div>
             </div>
-          </div>
-
-          {/* Warning */}
-          <div className="flex items-start gap-3 bg-yellow-50">
-            <AlertCircle className="text-yellow-600 mt-1" size={20} />
-            <p className="text-sm text-yellow-800">
-              Make sure you have enough ETH in your wallet to cover the domain price plus gas fees.
-            </p>
           </div>
         </div>
 
