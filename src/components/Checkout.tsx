@@ -180,10 +180,12 @@ const Checkout: React.FC<CheckoutProps> = ({ listing, open, onClose, onConfirm }
 
           {/* Purchase Steps */}
           <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <Shield className="text-blue-600" size={20} />
+            <div className="flex items-start justify-center sm:justify-start sm:pl-4 gap-3">
               <div>
-                <h4 className="font-medium">Secure Transfer</h4>
+                <h4 className="font-medium flex items-center gap-3">
+                  <Shield className="text-blue-600" size={20} />
+                  Secure Transfer
+                </h4>
                 <p className="text-sm text-gray-600">
                   Domain transfer is verified before completion
                 </p>
