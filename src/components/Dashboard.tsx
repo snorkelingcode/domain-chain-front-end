@@ -60,15 +60,20 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden sm:flex items-center justify-between py-6">
-          {/* Logo - Desktop */}
-          <div className="flex-shrink-0">
+        <div className="hidden sm:flex w-full relative items-center justify-between py-6">
+          {/* Left placeholder for layout balance */}
+          <div className="w-24"></div>
+          
+          {/* Centered Logo */}
+          <div className="absolute left-1/2 -translate-x-1/2">
             <img 
               src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
               className="h-16 w-auto"
             />
           </div>
+          
+          {/* Return to Marketplace Button */}
           <button
             onClick={onBack}
             className="text-blue-600 hover:text-blue-700 font-medium"
@@ -86,6 +91,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
           />
         </div>
 
+        {/* Rest of the Dashboard content remains the same */}
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4">
@@ -137,6 +143,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
           </div>
         </div>
 
+        {/* Rest of the content remains unchanged */}
         {/* Charts and Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4">
@@ -160,6 +167,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
             </div>
           </div>
 
+          {/* Remaining content stays the same */}
           <div className="bg-white rounded-lg shadow-sm p-4">
             <h3 className="text-lg font-medium mb-4">Recent Purchases</h3>
             <div className="space-y-3">
