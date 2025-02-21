@@ -57,6 +57,15 @@ function App() {
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Layout */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
+            {/* Logo */}
+            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'hidden'}`}>
+              <img 
+                src="/LogoHeader_Transparent_5972X_1080Y.png" 
+                alt="Domain Chain Logo" 
+                className="h-12 w-auto"
+              />
+            </div>
+            
             {/* Mode Toggle Buttons */}
             <div className="w-full">
               <div className="flex rounded-md shadow-sm w-full" role="group">
