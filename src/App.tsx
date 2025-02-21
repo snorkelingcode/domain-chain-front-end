@@ -26,46 +26,48 @@ function App() {
               />
             </div>
             
-            {/* Center Container for Mode Toggle Buttons */}
-            <div className="w-full sm:w-1/3 flex justify-center order-2 sm:order-2">
-              <div className="flex rounded-md shadow-sm" role="group">
-                <button 
-                  type="button"
-                  onClick={() => setMode('buy')}
-                  className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
-                    mode === 'buy' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-l-lg`}
-                >
-                  Buy Domain
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setMode('sell')}
-                  className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
-                    mode === 'sell' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-r-lg`}
-                >
-                  Sell Domain
-                </button>
+            {/* Center Container for Mobile Layout */}
+            <div className="w-full sm:w-auto flex flex-col sm:flex-row items-center gap-3 order-2 sm:order-none">
+              {/* Mode Toggle Buttons */}
+              <div className="w-full sm:w-auto">
+                <div className="flex rounded-md shadow-sm w-full sm:w-auto" role="group">
+                  <button 
+                    type="button"
+                    onClick={() => setMode('buy')}
+                    className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
+                      mode === 'buy' 
+                        ? 'bg-blue-600 text-white border-blue-600' 
+                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
+                    } rounded-l-lg`}
+                  >
+                    Buy Domain
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setMode('sell')}
+                    className={`flex-1 sm:flex-none px-4 py-2 text-sm font-medium border ${
+                      mode === 'sell' 
+                        ? 'bg-blue-600 text-white border-blue-600' 
+                        : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
+                    } rounded-r-lg`}
+                  >
+                    Sell Domain
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Wallet Connect Button Container */}
-            <div className="w-1/3 flex justify-end order-3 sm:order-3">
-              {/* Desktop Wallet Connect Button */}
+              {/* Connect Wallet Button - Full width on mobile */}
               <button 
-                className="hidden sm:block px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full sm:w-auto order-3 sm:order-none px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
+            </div>
 
-              {/* Mobile Wallet Connect Button */}
+            {/* Wallet Button for Desktop */}
+            <div className="hidden sm:block w-1/3 flex justify-end order-3">
               <button 
-                className="sm:hidden w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
