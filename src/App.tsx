@@ -15,13 +15,22 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-1">
         <div className="relative flex justify-center items-center py-8">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+          {/* Logo with conditional positioning */}
+          <div 
+            className={`transition-all duration-300 ${
+              mode === 'buy'
+                ? 'absolute left-0 top-1/2 -translate-y-1/2' // Original position for buy mode
+                : 'relative -translate-y-0' // Centered position for sell mode
+            }`}
+          >
             <img 
               src="/LogoHeader_Transparent_5972X_1080Y.png" 
               alt="Domain Chain Logo" 
               className="h-16 w-auto"
             />
           </div>
+          
+          {/* Mode Toggle Buttons */}
           <div className="inline-flex rounded-md shadow-sm" role="group">
             <button 
               type="button"
