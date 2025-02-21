@@ -60,17 +60,35 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
         </div>
 
         {/* Desktop Header */}
-        <div className="hidden sm:flex w-full relative justify-between items-center py-6">
-          {/* Placeholder for layout balance */}
-          <div className="w-24"></div>
-          
-          {/* Centered Logo */}
-          <div className="absolute left-1/2 -translate-x-1/2">
-            <img 
-              src="/LogoHeader_Transparent_5972X_1080Y.png" 
-              alt="Domain Chain Logo" 
-              className="h-16 w-auto"
-            />
+        <div className="hidden sm:flex flex-col items-center py-3 sm:py-6">
+          <div className="w-full flex relative justify-between items-center">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <img 
+                src="/LogoHeader_Transparent_5972X_1080Y.png" 
+                alt="Domain Chain Logo" 
+                className="h-16 w-auto"
+              />
+            </div>
+            
+            {/* Mode Toggle Buttons */}
+            <div className="absolute left-1/2 -translate-x-1/2">
+              <div className="inline-flex rounded-md shadow-sm" role="group">
+                <button 
+                  type="button"
+                  onClick={onBack}
+                  className="px-4 py-2 text-sm font-medium border bg-white text-gray-900 border-gray-200 hover:bg-gray-100 rounded-l-lg"
+                >
+                  Buy Domain
+                </button>
+                <button 
+                  type="button"
+                  className="px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
+                >
+                  Dashboard
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
