@@ -15,20 +15,12 @@ function App() {
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-1">
         <div className="flex justify-center items-center h-16 my-8">
-          <div className="flex items-center gap-6">
-            <svg
-              width="40"
-              height="40"
-              viewBox="0 0 24 24"
-              className="text-blue-500"
-            >
-              <circle cx="12" cy="12" r="10" fill="currentColor" fillOpacity="0.2" />
-              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none" />
-              <circle cx="12" cy="6" r="2" fill="#a7f3d0" />
-              <circle cx="6" cy="18" r="2" fill="#a7f3d0" />
-              <circle cx="18" cy="18" r="2" fill="#a7f3d0" />
-              <path d="M12 8L7 17M12 8L17 17M7 17L17 17" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
+          <div className="flex items-center gap-4">
+            <img 
+              src="/logo.png" 
+              alt="Domain Chain Logo" 
+              className="h-8 w-auto"
+            />
             <div className="inline-flex rounded-md shadow-sm" role="group">
               <button 
                 type="button"
