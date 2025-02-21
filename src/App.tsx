@@ -16,9 +16,9 @@ function App() {
       <div className="container mx-auto px-2 sm:px-4">
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Header Container */}
-          <div className="w-full grid grid-cols-3 items-center gap-4 sm:gap-6">
-            {/* Logo - Left Side */}
-            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} justify-self-start`}>
+          <div className="w-full flex flex-col sm:flex-row sm:justify-between items-center gap-4 sm:gap-6">
+            {/* Logo - Visible only in buy mode */}
+            <div className={`${mode === 'buy' ? 'flex-shrink-0' : 'hidden'} sm:order-1 order-1 w-1/3 flex justify-start`}>
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -26,8 +26,8 @@ function App() {
               />
             </div>
             
-            {/* Mode Toggle Buttons - Centered */}
-            <div className="justify-self-center">
+            {/* Center Container for Mode Toggle Buttons */}
+            <div className="w-full sm:w-1/3 flex justify-center order-2 sm:order-2">
               <div className="flex rounded-md shadow-sm" role="group">
                 <button 
                   type="button"
@@ -54,10 +54,18 @@ function App() {
               </div>
             </div>
 
-            {/* Wallet Button - Right Side */}
-            <div className="justify-self-end">
+            {/* Wallet Connect Button Container */}
+            <div className="w-1/3 flex justify-end order-3 sm:order-3">
+              {/* Desktop Wallet Connect Button */}
               <button 
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="hidden sm:block px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Connect Wallet
+              </button>
+
+              {/* Mobile Wallet Connect Button */}
+              <button 
+                className="sm:hidden w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Connect Wallet
               </button>
