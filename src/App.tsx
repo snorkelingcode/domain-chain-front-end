@@ -46,8 +46,8 @@ function App() {
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Layout */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
-            {/* Logo */}
-            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'hidden'}`}>
+            {/* Centered Logo */}
+            <div className="flex-shrink-0">
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -56,36 +56,42 @@ function App() {
             </div>
             
             {/* Wallet Section */}
-            {isConnected ? (
-              <div className="w-full flex gap-2">
+            <div className="absolute top-3 right-2 sm:hidden">
+              {isConnected ? (
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => setMode('dashboard')}
+                    className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {account ? formatAddress(account) : 'Dashboard'}
+                  </button>
+                  <button 
+                    onClick={() => setShowSignOutDialog(true)}
+                    className="px-2 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                  >
+                    <LogOut size={16} />
+                  </button>
+                </div>
+              ) : (
                 <button 
-                  onClick={() => setMode('dashboard')}
-                  className="flex-1 px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={handleConnectWallet}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
                 >
-                  {account ? formatAddress(account) : 'Dashboard'}
+                  {loading ? 'Connecting...' : 'Connect Wallet'}
                 </button>
-                <button 
-                  onClick={() => setShowSignOutDialog(true)}
-                  className="px-4 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={handleConnectWallet}
-                disabled={loading}
-                className="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-              >
-                {loading ? 'Connecting...' : 'Connect Wallet'}
-              </button>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Desktop Layout */}
-          <div className="hidden sm:flex w-full relative justify-between items-center">
-            {/* Logo */}
-            <div className={`${mode === 'buy' || mode === 'dashboard' ? 'flex-shrink-0' : 'invisible'}`}>
+          <div className="hidden sm:flex w-full relative justify-center items-center">
+            {/* Centered Logo */}
+            <div className="absolute left-0">
+              {/* This div keeps the wallet section in place */}
+            </div>
+
+            <div className="flex-shrink-0">
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
                 alt="Domain Chain Logo" 
@@ -94,30 +100,32 @@ function App() {
             </div>
 
             {/* Wallet Section */}
-            {isConnected ? (
-              <div className="flex items-center gap-2">
+            <div className="absolute right-0 flex items-center gap-2">
+              {isConnected ? (
+                <>
+                  <button 
+                    onClick={() => setMode('dashboard')}
+                    className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {account ? formatAddress(account) : 'Dashboard'}
+                  </button>
+                  <button 
+                    onClick={() => setShowSignOutDialog(true)}
+                    className="p-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                  >
+                    <LogOut size={16} />
+                  </button>
+                </>
+              ) : (
                 <button 
-                  onClick={() => setMode('dashboard')}
-                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={handleConnectWallet}
+                  disabled={loading}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
                 >
-                  {account ? formatAddress(account) : 'Dashboard'}
+                  {loading ? 'Connecting...' : 'Connect Wallet'}
                 </button>
-                <button 
-                  onClick={() => setShowSignOutDialog(true)}
-                  className="p-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-                >
-                  <LogOut size={16} />
-                </button>
-              </div>
-            ) : (
-              <button 
-                onClick={handleConnectWallet}
-                disabled={loading}
-                className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-              >
-                {loading ? 'Connecting...' : 'Connect Wallet'}
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
         
