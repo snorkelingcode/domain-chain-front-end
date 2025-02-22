@@ -2,6 +2,7 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "outputDirectory": "dist",
+  "framework": "vite",
   "env": {
     "VITE_WALLETCONNECT_PROJECT_ID": "@walletconnect_project_id",
     "VITE_DOMAIN_NFT_CONTRACT_ADDRESS": "@domain_nft_contract_address",

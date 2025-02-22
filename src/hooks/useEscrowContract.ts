@@ -2,21 +2,14 @@ import { useState, useEffect } from 'react';
 import { createConfig, http, useAccount, useConnect, useDisconnect } from 'wagmi';
 import { mainnet, arbitrum, polygon } from 'wagmi/chains';
 import { walletConnect } from 'wagmi/connectors';
-import { createWeb3Modal } from '@web3modal/wagmi/react';
-
-// Ensure type safety for environment variables
-const projectId = process.env.VITE_WALLETCONNECT_PROJECT_ID;
-
-if (!projectId) {
-  throw new Error('Missing VITE_WALLETCONNECT_PROJECT_ID in environment variables');
-}
+import { config as appConfig } from '../config';
 
 // Create wagmi config
 export const config = createConfig({
-  chains: [mainnet],
+  chains: [mainnet, arbitrum, polygon],
   connectors: [
     walletConnect({ 
-      projectId,
+      projectId: appConfig.walletConnect.projectId,
       metadata: {
         name: 'Domain Chain',
         description: 'Domain Marketplace',
@@ -26,15 +19,10 @@ export const config = createConfig({
     })
   ],
   transports: {
-    [mainnet.id]: http()
+    [mainnet.id]: http(),
+    [arbitrum.id]: http(),
+    [polygon.id]: http()
   }
-});
-
-// Create Web3Modal (if not already created in App.tsx)
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId: projectId || '',
-  enableAnalytics: true
 });
 
 export const useEscrowContract = () => {
