@@ -14,7 +14,7 @@ import { LogOut, AlertCircle } from 'lucide-react';
 const queryClient = new QueryClient();
 
 // Create Web3Modal
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+const projectId = process.env.VITE_WALLETCONNECT_PROJECT_ID;
 createWeb3Modal({
   wagmiConfig: config,
   projectId: projectId || '',

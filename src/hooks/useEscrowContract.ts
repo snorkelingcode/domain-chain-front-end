@@ -5,10 +5,10 @@ import { walletConnect } from 'wagmi/connectors';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 
 // Ensure type safety for environment variables
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+const projectId = process.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 if (!projectId) {
-  console.error('Missing WalletConnect Project ID');
+  throw new Error('Missing VITE_WALLETCONNECT_PROJECT_ID in environment variables');
 }
 
 // Create wagmi config
