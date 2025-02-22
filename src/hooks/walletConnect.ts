@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { createConfig, http } from 'wagmi';
+import { Web3Modal } from '@web3modal/html';
+import { createConfig, http, WagmiProvider } from 'wagmi';
 import { mainnet, arbitrum, polygon } from 'wagmi/chains';
 import { walletConnect } from 'wagmi/connectors';
-import { createWeb3Modal } from '@web3modal/wagmi';
 
 // Ensure type safety for environment variables
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
@@ -33,9 +33,9 @@ export const config = createConfig({
 });
 
 // Create Web3Modal
-const web3modal = createWeb3Modal({
-  wagmiConfig: config,
+const web3modal = new Web3Modal({ 
   projectId: projectId || '',
+  defaultChain: mainnet,
   enableAnalytics: true
 });
 
@@ -46,19 +46,25 @@ export const useEscrowContract = () => {
   const [account, setAccount] = useState<string | null>(null);
 
   useEffect(() => {
-    // Setup event listeners for connection state
-    const unsubscribe = config.subscribe(
-      (state) => {
-        const address = state.address;
-        const isConnected = state.isConnected;
-
-        setIsConnected(!!isConnected);
-        setAccount(address || null);
+    // Setup event listeners
+    const handleConnection = (event: any) => {
+      if (event.detail) {
+        setIsConnected(true);
+        setAccount(event.detail.address);
       }
-    );
+    };
+
+    const handleDisconnection = () => {
+      setIsConnected(false);
+      setAccount(null);
+    };
+
+    document.addEventListener('wallet-connect', handleConnection);
+    document.addEventListener('wallet-disconnect', handleDisconnection);
 
     return () => {
-      unsubscribe();
+      document.removeEventListener('wallet-connect', handleConnection);
+      document.removeEventListener('wallet-disconnect', handleDisconnection);
     };
   }, []);
 
@@ -82,7 +88,7 @@ export const useEscrowContract = () => {
 
   const disconnectWallet = () => {
     try {
-      config.disconnect();
+      web3modal.close();
       setIsConnected(false);
       setAccount(null);
     } catch (err) {

@@ -1,30 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { WagmiProvider } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
 import BuyerInterface from './components/BuyerInterface';
 import Dashboard from './components/Dashboard';
 import { useEscrowContract } from './hooks/useEscrowContract';
+import { config } from './hooks/useEscrowContract';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/Alert-Dialog';
-import { LogOut } from 'lucide-react';
+import { Alert, AlertDescription } from './components/ui/Alerts';
+import { LogOut, AlertCircle } from 'lucide-react';
 
-function App() {
+// Create a client
+const queryClient = new QueryClient();
+
+// Create Web3Modal
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId: projectId || '',
+  enableAnalytics: true
+});
+
+function AppContent() {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const { 
     connectWallet, 
     disconnectWallet,
     loading, 
+    error,
     isConnected,
     account 
   } = useEscrowContract();
 
   const handleConnectWallet = async () => {
-    if (!isConnected) {
-      try {
+    try {
+      if (!isConnected) {
         await connectWallet();
-      } catch (error) {
-        console.error('Failed to connect wallet:', error);
+      } else {
+        setMode('dashboard');
       }
-    } else {
-      setMode('dashboard');
+    } catch (connectionError) {
+      // Error handling is managed by the hook
+      console.error('Wallet connection failed', connectionError);
     }
   };
 
@@ -42,6 +60,16 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
+        {/* Error Alert */}
+        {error && (
+          <div className="absolute top-4 left-0 right-0 z-50 px-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+
         {/* Header Section */}
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Layout */}
@@ -86,7 +114,7 @@ function App() {
 
           {/* Desktop Layout */}
           <div className="hidden sm:flex w-full relative justify-center items-center">
-            {/* Centered Logo */}
+            {/* Placeholder for left side balance */}
             <div className="absolute left-0">
               {/* This div keeps the wallet section in place */}
             </div>
@@ -160,6 +188,16 @@ function App() {
         </AlertDialogContent>
       </AlertDialog>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
 
