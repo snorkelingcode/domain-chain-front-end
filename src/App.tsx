@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import BuyerInterface from './components/BuyerInterface';
-import SellerInterface from './components/SellerInterface';
 import Dashboard from './components/Dashboard';
 import { useEscrowContract } from './hooks/useEscrowContract';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/Alert-Dialog';
 import { LogOut } from 'lucide-react';
 
 function App() {
-  const [mode, setMode] = useState<'buy' | 'sell' | 'dashboard'>('buy');
-  const [newListingTrigger, setNewListingTrigger] = useState(0);
+  const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const { 
     connectWallet, 
@@ -17,11 +15,6 @@ function App() {
     isConnected,
     account 
   } = useEscrowContract();
-
-  const handleListingPublished = () => {
-    setMode('buy');
-    setNewListingTrigger(prev => prev + 1);
-  };
 
   const handleConnectWallet = async () => {
     if (!isConnected) {
@@ -39,10 +32,6 @@ function App() {
     disconnectWallet();
     setMode('buy');
     setShowSignOutDialog(false);
-  };
-
-  const handleDashboardExit = () => {
-    setMode('buy');
   };
 
   // Format wallet address for display
@@ -66,42 +55,6 @@ function App() {
               />
             </div>
             
-            {/* Mode Toggle Buttons */}
-            <div className="w-full">
-              <div className="flex rounded-md shadow-sm w-full" role="group">
-                <button 
-                  type="button"
-                  onClick={() => setMode('buy')}
-                  className={`flex-1 px-4 py-2 text-sm font-medium border ${
-                    mode === 'buy' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-l-lg`}
-                >
-                  Buy Domain
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setMode('sell')}
-                  className={`flex-1 px-4 py-2 text-sm font-medium border ${
-                    mode === 'sell' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } ${mode === 'dashboard' ? '' : 'rounded-r-lg'}`}
-                >
-                  Sell Domain
-                </button>
-                {mode === 'dashboard' && (
-                  <button 
-                    type="button"
-                    className="flex-1 px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
-                  >
-                    Dashboard
-                  </button>
-                )}
-              </div>
-            </div>
-
             {/* Wallet Section */}
             {isConnected ? (
               <div className="w-full flex gap-2">
@@ -139,42 +92,6 @@ function App() {
                 className="h-16 w-auto"
               />
             </div>
-            
-            {/* Mode Toggle Buttons */}
-            <div className="absolute left-1/2 -translate-x-1/2">
-              <div className="inline-flex rounded-md shadow-sm" role="group">
-                <button 
-                  type="button"
-                  onClick={() => setMode('buy')}
-                  className={`px-4 py-2 text-sm font-medium border ${
-                    mode === 'buy' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } rounded-l-lg`}
-                >
-                  Buy Domain
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setMode('sell')}
-                  className={`px-4 py-2 text-sm font-medium border ${
-                    mode === 'sell' 
-                      ? 'bg-blue-600 text-white border-blue-600' 
-                      : 'bg-white text-gray-900 border-gray-200 hover:bg-gray-100'
-                  } ${mode === 'dashboard' ? '' : 'rounded-r-lg'}`}
-                >
-                  Sell Domain
-                </button>
-                {mode === 'dashboard' && (
-                  <button 
-                    type="button"
-                    className="px-4 py-2 text-sm font-medium border bg-blue-600 text-white border-blue-600 rounded-r-lg"
-                  >
-                    Dashboard
-                  </button>
-                )}
-              </div>
-            </div>
 
             {/* Wallet Section */}
             {isConnected ? (
@@ -207,10 +124,8 @@ function App() {
         {/* Main Content */}
         {mode === 'dashboard' ? (
           <Dashboard onBack={() => setMode('buy')} />
-        ) : mode === 'buy' ? (
-          <BuyerInterface key={newListingTrigger} />
         ) : (
-          <SellerInterface onListingPublished={handleListingPublished} />
+          <BuyerInterface />
         )}
       </div>
 
