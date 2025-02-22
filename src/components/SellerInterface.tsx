@@ -22,7 +22,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
   const [duration, setDuration] = useState('7');
   const [eppCode, setEppCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [_isVerified, setIsVerified] = useState(false);
+  const [isVerified, setIsVerified] = useState(false); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const { createEscrow } = useEscrowContract();
 
@@ -58,6 +58,15 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
     onListingPublished();
   };
 
+  // Logo component to be reused across steps
+  const LogoComponent = () => (
+    <img 
+      src="/LogoHeader_Transparent_5972X_1080Y.png" 
+      alt="Domain Chain Logo" 
+      className="h-8 sm:h-12 w-auto"
+    />
+  );
+
   return (
     <div className="min-h-[calc(100vh-80px)] bg-gray-50">
       {/* Progress Steps */}
@@ -92,11 +101,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
             <form onSubmit={handleDomainVerification} className="space-y-6">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
                 <h2 className="text-xl sm:text-2xl font-bold">Verify Domain Ownership</h2>
-                <img 
-                  src="/LogoHeader_Transparent_5972X_1080Y.png" 
-                  alt="Domain Chain Logo" 
-                  className="h-8 sm:h-12 w-auto"
-                />
+                <LogoComponent />
               </div>
               
               <div className="space-y-4">
@@ -158,7 +163,12 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
           )}
 
           {currentStep === 2 && (
-            <form onSubmit={handleCreateEscrow} className="space-y-6">
+            <form onSubmit={handleCreateEscrow} className="space-y-6 relative">
+              {/* Position logo in top right for step 2 */}
+              <div className="absolute top-0 right-0">
+                <LogoComponent />
+              </div>
+
               <h2 className="text-2xl font-bold mb-6">Create Escrow Listing</h2>
               
               <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4 flex items-center">
@@ -224,7 +234,12 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
           )}
 
           {currentStep === 3 && (
-            <div className="text-center py-8">
+            <div className="text-center py-8 relative">
+              {/* Center logo above text for step 3 */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2">
+                <LogoComponent />
+              </div>
+
               <h2 className="text-2xl font-bold mb-4">Platform Domain Transfer</h2>
               <p className="text-gray-600 mb-6">
                 Domain has been securely transferred to our escrow platform
@@ -250,7 +265,12 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
           )}
 
           {currentStep === 4 && (
-            <div className="text-center py-8">
+            <div className="text-center py-8 relative">
+              {/* Center logo above text for step 4 */}
+              <div className="absolute top-4 left-1/2 -translate-x-1/2">
+                <LogoComponent />
+              </div>
+
               <h2 className="text-2xl font-bold mb-4">Listing Published</h2>
               <p className="text-gray-600 mb-6">
                 Your domain is now listed and ready for potential buyers
