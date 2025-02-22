@@ -28,9 +28,38 @@ export const useEscrowContract = () => {
     setIsConnected(false);
   };
 
+  // Add mock createEscrow method
+  const createEscrow = async ({
+    domainName,
+    price,
+    duration
+  }: {
+    domainName: string;
+    price: string;
+    duration: number;
+  }) => {
+    setLoading(true);
+    try {
+      // Simulate escrow creation
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log(`Creating escrow for ${domainName} at ${price} ETH for ${duration} days`);
+      return {
+        success: true,
+        transactionHash: '0x1234...',
+        escrowId: '123'
+      };
+    } catch (err) {
+      setError('Failed to create escrow');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     connectWallet,
     disconnectWallet,
+    createEscrow, // Add this to the returned object
     loading,
     error,
     isConnected,

@@ -22,7 +22,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
   const [duration, setDuration] = useState('7');
   const [eppCode, setEppCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
+  const [_isVerified, setIsVerified] = useState(false);
 
   const { createEscrow } = useEscrowContract();
 
