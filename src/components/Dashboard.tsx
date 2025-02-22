@@ -17,7 +17,8 @@ import {
   Clock,
   ArrowUpRight,
   ArrowDownRight,
-  Heart
+  Heart,
+  ArrowLeft
 } from 'lucide-react';
 
 // Mock data
@@ -47,7 +48,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onBack }) => {
   return (
     <div className="min-h-[calc(100vh-80px)] bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
-        {/* Rest of the Dashboard content remains the same */}
+        {/* Back to Listings Button */}
+        <div className="mb-4 sm:mb-6">
+          <button 
+            onClick={onBack}
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft className="mr-2" size={20} />
+            Back to Domains
+          </button>
+        </div>
+
         {/* Overview Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="bg-white rounded-lg shadow-sm p-4">
