@@ -271,7 +271,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               <div className="absolute top-0 left-1/2 -translate-x-1/2">
                 <LogoComponent />
               </div>
-              <div className="pt-12">
               <div className="pt-12"> {/* Add padding to prevent text overlap */}
                 <h2 className="text-2xl font-bold mb-4">Listing Published</h2>
                 <p className="text-gray-600 mb-6">
@@ -293,7 +292,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               </button>
                 </div>
               </div>
-            </div>
           )}
         </div>
       </div>
