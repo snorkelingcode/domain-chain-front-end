@@ -13,22 +13,20 @@ if (!projectId) {
 
 // Create wagmi config
 export const config = createConfig({
-  chains: [mainnet, arbitrum, polygon],
+  chains: [mainnet],
   connectors: [
     walletConnect({ 
-      projectId: projectId || '',
+      projectId,
       metadata: {
         name: 'Domain Chain',
         description: 'Domain Marketplace',
-        url: 'https://domainchain.com',
-        icons: ['https://yourdomain.com/logo.png']
+        url: window.location.origin,
+        icons: [`${window.location.origin}/logo.png`]
       }
     })
   ],
   transports: {
-    [mainnet.id]: http(),
-    [arbitrum.id]: http(),
-    [polygon.id]: http()
+    [mainnet.id]: http()
   }
 });
 
