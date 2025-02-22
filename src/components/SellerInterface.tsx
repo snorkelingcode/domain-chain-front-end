@@ -144,10 +144,6 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                       <li>Domain will be temporarily transferred to our escrow platform</li>
                       <li>New EPP code will be generated to prevent unauthorized transfers</li>
                     </ol>
-                    <p className="mt-2 text-red-600 text-sm font-medium">
-                      WARNING: Once you verify your domain, the platform will change your EPP code while in escrow. 
-                      You may cancel your listing at any time for the new EPP code.
-                    </p>
                   </AlertDescription>
                 </Alert>
               </div>
@@ -162,14 +158,14 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
             </form>
           )}
 
-          {currentStep === 2 && (
-            <form onSubmit={handleCreateEscrow} className="space-y-6 relative">
-              {/* Position logo in top right for step 2 */}
-              <div className="absolute top-0 right-0">
-                <LogoComponent />
-              </div>
+            {currentStep === 2 && (
+              <form onSubmit={handleCreateEscrow} className="space-y-6 relative">
+                {/* Mobile logo positioning */}
+                <div className="absolute top-0 right-0 sm:right-auto sm:top-auto">
+                  <LogoComponent />
+                </div>
 
-              <h2 className="text-2xl font-bold mb-6">Create Escrow Listing</h2>
+                <h2 className="text-2xl font-bold mb-6">Create Escrow Listing</h2>
               
               <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-4 flex items-center">
                 <ShieldCheck className="text-green-600 mr-3" size={24} />
@@ -232,15 +228,15 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               </button>
             </form>
           )}
-
           {currentStep === 3 && (
             <div className="text-center py-8 relative">
-              {/* Center logo above text for step 3 */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2">
+              {/* Mobile logo positioning */}
+              <div className="absolute top-0 right-0 sm:top-0 sm:left-1/2 sm:-translate-x-1/2">
                 <LogoComponent />
               </div>
-              <div className="pt-12">
-              <h2 className="text-2xl font-bold mb-4">Platform Domain Transfer</h2>
+
+              <div className="pt-12 sm:pt-0">
+                <h2 className="text-2xl font-bold mb-4">Platform Domain Transfer</h2>
               <p className="text-gray-600 mb-6">
                 Domain has been securely transferred to our escrow platform
               </p>
@@ -267,11 +263,12 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
 
           {currentStep === 4 && (
             <div className="text-center py-8 relative">
-              {/* Adjust logo positioning */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2">
+              {/* Mobile logo positioning */}
+              <div className="absolute top-0 right-0 sm:top-0 sm:left-1/2 sm:-translate-x-1/2">
                 <LogoComponent />
               </div>
-              <div className="pt-12"> {/* Add padding to prevent text overlap */}
+
+              <div className="pt-12 sm:pt-0">
                 <h2 className="text-2xl font-bold mb-4">Listing Published</h2>
                 <p className="text-gray-600 mb-6">
                   Your domain is now listed and ready for potential buyers
