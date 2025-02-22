@@ -111,6 +111,8 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({
     }
   };
 
+  const [eppCode, setEppCode] = useState('');
+
   // Step 1: Domain Verification Initiation
   const renderVerificationStep = () => (
     <form onSubmit={handleDomainVerification} className="space-y-6">
@@ -129,6 +131,24 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({
         </div>
       </div>
 
+      <div>
+        <label className="block text-sm font-medium mb-2">EPP Code</label>
+        <div className="relative">
+          <ShieldCheck className="absolute left-3 top-3 text-gray-400" size={18} />
+          <input
+            type="text"
+            value={eppCode}
+            onChange={(e) => setEppCode(e.target.value)}
+            placeholder="Enter your domain's EPP code"
+            className="w-full p-2 pl-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <p className="mt-1 text-sm text-gray-500">
+          The EPP code from your current registrar is required to verify ownership
+        </p>
+      </div>
+
       {verificationError && (
         <Alert variant="destructive">
           <AlertDescription>{verificationError}</AlertDescription>
@@ -139,10 +159,10 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({
         <AlertDescription className="text-blue-600 text-sm">
           <div className="font-medium mb-2">Domain Verification Process:</div>
           <ol className="list-decimal ml-4 space-y-1">
-            <li>Enter your domain name</li>
+            <li>Enter your domain name and EPP code</li>
             <li>Our platform verifies domain ownership</li>
             <li>Domain is temporarily locked in escrow</li>
-            <li>Cryptographic proof of ownership generated</li>
+            <li>A new EPP code will be generated upon sale</li>
           </ol>
         </AlertDescription>
       </Alert>
@@ -228,27 +248,28 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({
     );
   };
 
-  // Step 3: Listing Confirmation
-  const renderListingConfirmation = () => (
-    <div className="text-center space-y-6">
-      <ShieldCheck className="mx-auto text-green-600" size={64} />
-      <h2 className="text-2xl font-bold">Domain Successfully Listed</h2>
-      <div className="bg-gray-100 p-4 rounded-lg">
-        <p className="font-medium">{domainName}</p>
-        <p className="text-sm text-gray-600">Listed for {price} ETH</p>
-      </div>
-      <button 
-        onClick={() => {
-          setCurrentStep(1);
-          setDomainName('');
-          setPrice('');
-        }}
-        className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        List Another Domain
-      </button>
+// Step 3: Listing Confirmation
+const renderListingConfirmation = () => (
+  <div className="text-center space-y-6">
+    <ShieldCheck className="mx-auto text-green-600" size={64} />
+    <h2 className="text-2xl font-bold">Domain Successfully Listed</h2>
+    <div className="bg-gray-100 p-4 rounded-lg">
+      <p className="font-medium">{domainName}</p>
+      <p className="text-sm text-gray-600">Listed for {price} ETH</p>
     </div>
-  );
+    <button 
+      onClick={() => {
+        setCurrentStep(1);
+        setDomainName('');
+        setPrice('');
+        setEppCode(''); // Added this line
+      }}
+      className="w-full px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+    >
+      List Another Domain
+    </button>
+  </div>
+);
 
   // Render current step
   const renderCurrentStep = () => {
