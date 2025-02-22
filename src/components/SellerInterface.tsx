@@ -236,10 +236,10 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
           {currentStep === 3 && (
             <div className="text-center py-8 relative">
               {/* Center logo above text for step 3 */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2">
                 <LogoComponent />
               </div>
-
+              <div className="pt-12">
               <h2 className="text-2xl font-bold mb-4">Platform Domain Transfer</h2>
               <p className="text-gray-600 mb-6">
                 Domain has been securely transferred to our escrow platform
@@ -252,6 +252,7 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
                   <ShieldCheck className="text-green-500" size={24} />
                   <span className="text-green-600">Verified & Secured</span>
                 </div>
+              </div>
               </div>
               <div className="mt-6">
                 <button
@@ -266,15 +267,16 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
 
           {currentStep === 4 && (
             <div className="text-center py-8 relative">
-              {/* Center logo above text for step 4 */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2">
+              {/* Adjust logo positioning */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2">
                 <LogoComponent />
               </div>
-
-              <h2 className="text-2xl font-bold mb-4">Listing Published</h2>
-              <p className="text-gray-600 mb-6">
-                Your domain is now listed and ready for potential buyers
-              </p>
+              <div className="pt-12">
+              <div className="pt-12"> {/* Add padding to prevent text overlap */}
+                <h2 className="text-2xl font-bold mb-4">Listing Published</h2>
+                <p className="text-gray-600 mb-6">
+                  Your domain is now listed and ready for potential buyers
+                </p>
               <div className="bg-gray-50 p-4 rounded-lg flex items-center justify-between">
                 <code className="text-sm">
                   https://domain-escrow.com/listing/{domainName}
@@ -289,6 +291,8 @@ const SellerInterface: React.FC<SellerInterfaceProps> = ({ onListingPublished })
               >
                 View Listings
               </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
