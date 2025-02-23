@@ -45,22 +45,6 @@ export const useEscrowContract = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Setup event listeners for connection state
-    const unsubscribe = config.subscribe(
-      (state) => {
-        const address = state.address;
-        const isConnected = state.isConnected;
-
-        setIsConnected(!!isConnected);
-        setAccount(address || null);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   const connectWallet = async () => {
     setLoading(true);
@@ -77,16 +61,6 @@ export const useEscrowContract = () => {
       throw err;
     } finally {
       setLoading(false);
-    }
-  };
-
-  const disconnectWallet = () => {
-    try {
-      config.disconnect();
-      setIsConnected(false);
-      setAccount(null);
-    } catch (err) {
-      console.error('Disconnect error', err);
     }
   };
 
@@ -120,7 +94,6 @@ export const useEscrowContract = () => {
 
   return {
     connectWallet,
-    disconnectWallet,
     createEscrow,
     loading,
     error,
