@@ -2,6 +2,7 @@
 .env
 .env.local
 .env.*.local
+vite-env.d.ts
 
 # Editor directories and files
 .vscode/*
