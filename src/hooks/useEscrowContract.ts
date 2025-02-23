@@ -1,20 +1,27 @@
 import { useState, useEffect } from 'react';
-import { createConfig, http, useAccount, useConnect, useDisconnect } from 'wagmi';
+import { createConfig, http } from 'wagmi';
 import { mainnet, arbitrum, polygon } from 'wagmi/chains';
 import { walletConnect } from 'wagmi/connectors';
-import { config as appConfig } from '../config';
+import { createWeb3Modal } from '@web3modal/wagmi';
+
+// Ensure type safety for environment variables
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+
+if (!projectId) {
+  console.error('Missing WalletConnect Project ID');
+}
 
 // Create wagmi config
 export const config = createConfig({
   chains: [mainnet, arbitrum, polygon],
   connectors: [
     walletConnect({ 
-      projectId: appConfig.walletConnect.projectId,
+      projectId: projectId || '',
       metadata: {
         name: 'Domain Chain',
         description: 'Domain Marketplace',
-        url: window.location.origin,
-        icons: [`${window.location.origin}/logo.png`]
+        url: 'https://domainchain.com',
+        icons: ['https://yourdomain.com/logo.png']
       }
     })
   ],
@@ -25,39 +32,43 @@ export const config = createConfig({
   }
 });
 
+// Create Web3Modal
+const web3modal = createWeb3Modal({
+  wagmiConfig: config,
+  projectId: projectId || '',
+  enableAnalytics: true
+});
+
 export const useEscrowContract = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [account, setAccount] = useState<string | null>(null);
 
-  // Use Wagmi hooks for connection state and actions
-  const { 
-    isConnected, 
-    address: account 
-  } = useAccount();
-
-  const { 
-    connectAsync, 
-    error: connectError 
-  } = useConnect();
-
-  const { 
-    disconnectAsync 
-  } = useDisconnect();
-
-  // Sync error state with connect error
   useEffect(() => {
-    if (connectError) {
-      setError(connectError.message);
-    }
-  }, [connectError]);
+    // Setup event listeners for connection state
+    const unsubscribe = config.subscribe(
+      (state) => {
+        const address = state.address;
+        const isConnected = state.isConnected;
+
+        setIsConnected(!!isConnected);
+        setAccount(address || null);
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const connectWallet = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Attempt to connect wallet
-      await connectAsync({ connector: config.connectors[0] });
+      // Open WalletConnect modal
+      web3modal.open();
     } catch (err) {
       const errorMessage = err instanceof Error 
         ? err.message 
@@ -69,16 +80,17 @@ export const useEscrowContract = () => {
     }
   };
 
-  const disconnectWallet = async () => {
+  const disconnectWallet = () => {
     try {
-      await disconnectAsync();
+      config.disconnect();
+      setIsConnected(false);
+      setAccount(null);
     } catch (err) {
       console.error('Disconnect error', err);
-      setError('Failed to disconnect wallet');
     }
   };
 
-  // Mock createEscrow method (replace with actual contract interaction)
+  // Mock createEscrow method (you'll replace this with actual contract interaction)
   const createEscrow = async ({
     domainName,
     price,
@@ -116,5 +128,3 @@ export const useEscrowContract = () => {
     account
   };
 };
-
-export default useEscrowContract;

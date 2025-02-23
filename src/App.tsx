@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
 import BuyerInterface from './components/BuyerInterface';
 import Dashboard from './components/Dashboard';
-import { useEscrowContract, config } from './hooks/useEscrowContract';
-import { config as appConfig } from './config';
+import { useEscrowContract } from './hooks/useEscrowContract';
+import { config } from './hooks/useEscrowContract';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/Alert-Dialog';
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle } from 'lucide-react';
@@ -14,9 +14,10 @@ import { LogOut, AlertCircle } from 'lucide-react';
 const queryClient = new QueryClient();
 
 // Create Web3Modal
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 createWeb3Modal({
   wagmiConfig: config,
-  projectId: appConfig.walletConnect.projectId,
+  projectId: projectId || '',
   enableAnalytics: true
 });
 
@@ -40,6 +41,7 @@ function AppContent() {
         setMode('dashboard');
       }
     } catch (connectionError) {
+      // Error handling is managed by the hook
       console.error('Wallet connection failed', connectionError);
     }
   };
