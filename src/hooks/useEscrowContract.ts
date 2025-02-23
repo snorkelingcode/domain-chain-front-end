@@ -116,3 +116,5 @@ export const useEscrowContract = () => {
     account
   };
 };
+
+export default useEscrowContract;
