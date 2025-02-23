@@ -1,53 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { WagmiProvider } from 'wagmi';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createWeb3Modal } from '@web3modal/wagmi/react';
+import React, { useState } from 'react';
+import { 
+  ThirdwebProvider, 
+  useAddress, 
+  useConnect, 
+  useDisconnect, 
+  useConnectionStatus,
+  metamaskWallet 
+} from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
 import Dashboard from './components/Dashboard';
-import { useEscrowContract } from './hooks/useEscrowContract';
-import { config } from './hooks/useEscrowContract';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/Alert-Dialog';
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle } from 'lucide-react';
 
-// Create a client
-const queryClient = new QueryClient();
-
-// Create Web3Modal
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId: projectId || '',
-  enableAnalytics: true
-});
-
 function AppContent() {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  const { 
-    connectWallet, 
-    disconnectWallet,
-    loading, 
-    error,
-    isConnected,
-    account 
-  } = useEscrowContract();
+  const [error, setError] = useState<string | null>(null);
+
+  // ThirdWeb hooks
+  const address = useAddress();
+  const connectWithMetamask = useConnect();
+  const disconnect = useDisconnect();
+  const connectionStatus = useConnectionStatus();
 
   const handleConnectWallet = async () => {
     try {
-      if (!isConnected) {
-        await connectWallet();
+      if (!address) {
+        await connectWithMetamask(metamaskWallet());
       } else {
         setMode('dashboard');
       }
-    } catch (connectionError) {
-      // Error handling is managed by the hook
-      console.error('Wallet connection failed', connectionError);
+    } catch (error) {
+      console.error('Wallet connection failed', error);
+      setError('Failed to connect wallet');
     }
   };
 
   const handleSignOut = () => {
-    disconnectWallet();
+    disconnect();
     setMode('buy');
     setShowSignOutDialog(false);
   };
@@ -56,6 +48,9 @@ function AppContent() {
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
+
+  // Check if wallet is connecting
+  const isLoading = connectionStatus === "connecting";
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -85,13 +80,13 @@ function AppContent() {
             
             {/* Wallet Section */}
             <div className="absolute top-3 right-2 sm:hidden">
-              {isConnected ? (
+              {address ? (
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setMode('dashboard')}
                     className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    {account ? formatAddress(account) : 'Dashboard'}
+                    {formatAddress(address)}
                   </button>
                   <button 
                     onClick={() => setShowSignOutDialog(true)}
@@ -103,10 +98,10 @@ function AppContent() {
               ) : (
                 <button 
                   onClick={handleConnectWallet}
-                  disabled={loading}
+                  disabled={isLoading}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
                 >
-                  {loading ? 'Connecting...' : 'Connect Wallet'}
+                  {isLoading ? 'Connecting...' : 'Connect Wallet'}
                 </button>
               )}
             </div>
@@ -129,13 +124,13 @@ function AppContent() {
 
             {/* Wallet Section */}
             <div className="absolute right-0 flex items-center gap-2">
-              {isConnected ? (
+              {address ? (
                 <>
                   <button 
                     onClick={() => setMode('dashboard')}
                     className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    {account ? formatAddress(account) : 'Dashboard'}
+                    {formatAddress(address)}
                   </button>
                   <button 
                     onClick={() => setShowSignOutDialog(true)}
@@ -147,10 +142,10 @@ function AppContent() {
               ) : (
                 <button 
                   onClick={handleConnectWallet}
-                  disabled={loading}
+                  disabled={isLoading}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
                 >
-                  {loading ? 'Connecting...' : 'Connect Wallet'}
+                  {isLoading ? 'Connecting...' : 'Connect Wallet'}
                 </button>
               )}
             </div>
@@ -192,12 +187,15 @@ function AppContent() {
 }
 
 function App() {
+  const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
+
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <AppContent />
-      </QueryClientProvider>
-    </WagmiProvider>
+    <ThirdwebProvider 
+      activeChain={Sepolia}
+      clientId={clientId}
+    >
+      <AppContent />
+    </ThirdwebProvider>
   );
 }
 
