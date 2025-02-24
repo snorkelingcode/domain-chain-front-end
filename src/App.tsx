@@ -1,17 +1,15 @@
 import { useState, type FC } from 'react';
 import { 
   ThirdwebProvider,
-  ConnectButton,
   useAddress, 
-  useDisconnect,
-  useConnectionStatus
-} from "@thirdweb-dev/react";
-import { Sepolia } from "@thirdweb-dev/chains";
-import {
+  useConnect, 
+  useDisconnect, 
+  useConnectionStatus,
   metamaskWallet,
   coinbaseWallet,
   walletConnect
 } from "@thirdweb-dev/react";
+import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
 import Dashboard from './components/Dashboard';
 import { 
@@ -27,12 +25,14 @@ import {
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle } from 'lucide-react';
 
-// Custom wallet button component
-const WalletButton: FC = () => {
+// Enhanced wallet button that uses thirdweb hooks
+const EnhancedWalletButton: FC<{
+  onDashboard: () => void;
+  onSignOut: () => void;
+}> = ({ onDashboard, onSignOut }) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const address = useAddress();
-  const disconnect = useDisconnect();
+  const connect = useConnect();
   const connectionStatus = useConnectionStatus();
   const isConnecting = connectionStatus === "connecting";
 
@@ -40,18 +40,25 @@ const WalletButton: FC = () => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
+  const handleConnect = async () => {
+    try {
+      await connect(metamaskWallet());
+    } catch (error) {
+      console.error("Connection failed:", error);
+    }
+  };
+
   const handleSignOut = () => {
-    disconnect();
-    setMode('buy');
+    onSignOut();
     setShowSignOutDialog(false);
   };
 
-  // If connected, show the wallet address and sign out button
+  // If connected, show address and dashboard button
   if (address) {
     return (
       <div className="flex gap-2">
         <button 
-          onClick={() => setMode('dashboard')}
+          onClick={onDashboard}
           className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           type="button"
         >
@@ -65,7 +72,7 @@ const WalletButton: FC = () => {
           <LogOut size={16} />
         </button>
 
-        {/* Sign Out Dialog */}
+        {/* Sign Out Confirmation Dialog */}
         <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -91,41 +98,38 @@ const WalletButton: FC = () => {
     );
   }
 
-  // If not connected, show the ConnectButton
+  // If not connected, show connect button
   return (
-    <ConnectButton
-      theme="dark"
-      connectButton={{
-        label: isConnecting ? 'Connecting...' : 'Connect Wallet',
-        className: "px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-      }}
-    />
+    <button 
+      onClick={handleConnect}
+      disabled={isConnecting}
+      className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+      type="button"
+    >
+      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+    </button>
   );
 };
 
-// Main App Content
+// AppContent with improved wallet connection
 const AppContent: FC = () => {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
-  const [error, setError] = useState<string | null>(null);
   const address = useAddress();
+  const disconnect = useDisconnect();
 
-  // If in dashboard mode but not connected, switch to buy mode
+  // If user disconnects while in dashboard mode, switch to buy mode
   if (mode === 'dashboard' && !address) {
     setMode('buy');
   }
 
+  const handleSignOut = () => {
+    disconnect();
+    setMode('buy');
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
-        {error && (
-          <div className="absolute top-4 left-0 right-0 z-50 px-4">
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </div>
-        )}
-
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Header */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
@@ -138,7 +142,10 @@ const AppContent: FC = () => {
             </div>
             
             <div className="absolute top-3 right-2 sm:hidden">
-              <WalletButton />
+              <EnhancedWalletButton 
+                onDashboard={() => setMode('dashboard')}
+                onSignOut={handleSignOut}
+              />
             </div>
           </div>
 
@@ -155,7 +162,10 @@ const AppContent: FC = () => {
             </div>
 
             <div className="absolute right-0 flex items-center gap-2">
-              <WalletButton />
+              <EnhancedWalletButton 
+                onDashboard={() => setMode('dashboard')}
+                onSignOut={handleSignOut}
+              />
             </div>
           </div>
         </div>
@@ -173,10 +183,10 @@ const AppContent: FC = () => {
   );
 };
 
-// Main App Component
+// Updated App component with ThirdwebProvider
 const App: FC = () => {
   const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
-
+  
   return (
     <ThirdwebProvider 
       activeChain={Sepolia}
