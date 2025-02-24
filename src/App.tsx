@@ -5,9 +5,6 @@ import {
   useConnect, 
   useDisconnect, 
   useConnectionStatus,
-  metamaskWallet,
-  coinbaseWallet,
-  walletConnect
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
@@ -25,7 +22,124 @@ import {
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle, X } from 'lucide-react';
 
-// Wallet selection modal component
+// Wallet Button Component
+const WalletButton: FC<{
+  onDashboard: () => void;
+  onSignOut: () => void;
+}> = ({
+  onDashboard,
+  onSignOut
+}) => {
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const address = useAddress();
+  const connect = useConnect();
+  const disconnect = useDisconnect();
+  const connectionStatus = useConnectionStatus();
+  const isConnecting = connectionStatus === "connecting";
+  const [isLocalLoading, setIsLoading] = useState(false);
+  
+  // Combine both loading states
+  const isButtonLoading = isConnecting || isLocalLoading;
+
+  const formatAddress = (addr: string): string => {
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
+  // Function to safely call connect with appropriate arguments
+  const safeConnect = async () => {
+    try {
+      // Handle Brave wallet specially
+      if (window.ethereum?.isBraveWallet) {
+        console.log("Detected Brave wallet, requesting accounts...");
+        try {
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+        } catch (err) {
+          console.error("Error requesting accounts:", err);
+        }
+      }
+      
+      // Connect without arguments - use the connect function directly
+      // @ts-ignore - Ignoring type error to make it compatible with your thirdweb version
+      return await connect();
+    } catch (error) {
+      console.error("Connection error:", error);
+      throw error;
+    }
+  };
+
+  const handleConnectWallet = async () => {
+    try {
+      setIsLoading(true);
+      await safeConnect();
+      console.log("Wallet connected successfully");
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+      alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (address) {
+    return (
+      <div className="flex gap-2">
+        <button 
+          onClick={onDashboard}
+          className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          type="button"
+        >
+          {formatAddress(address)}
+        </button>
+        <button 
+          onClick={() => setShowSignOutDialog(true)}
+          className="px-2 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+          type="button"
+        >
+          <LogOut size={16} />
+        </button>
+
+        <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Sign Out</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to sign out?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setShowSignOutDialog(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={() => {
+                  onSignOut();
+                  setShowSignOutDialog(false);
+                }}
+                className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              >
+                Sign Out
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    );
+  }
+
+  return (
+    <button 
+      onClick={handleConnectWallet}
+      disabled={isButtonLoading}
+      className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+      type="button"
+    >
+      {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}
+    </button>
+  );
+};
+
+// Wallet Modal Component
 const WalletModal: FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -119,181 +233,7 @@ const WalletModal: FC<{
   );
 };
 
-interface WalletButtonProps {
-  onDashboard: () => void;
-  onSignOut: () => void;
-}
-
-const WalletButton: FC<WalletButtonProps> = ({
-  onDashboard,
-  onSignOut
-}) => {
-  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  const [showWalletModal, setShowWalletModal] = useState(false);
-  const address = useAddress();
-  const connect = useConnect();
-  const connectionStatus = useConnectionStatus();
-  const isLoading = connectionStatus === "connecting";
-
-  const formatAddress = (addr: string): string => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
-  };
-
-  const handleConnectWallet = () => {
-    setShowWalletModal(true);
-  };
-
-  const handleSelectWallet = async (walletType: string) => {
-    setShowWalletModal(false);
-    
-    try {
-      setIsLoading(true);
-      console.log(`Attempting to connect with ${walletType}...`);
-      
-      if (walletType === 'metamask') {
-        console.log('Connecting to MetaMask...');
-        const wallet = metamaskWallet();
-        console.log('Created wallet instance:', wallet);
-        await connect(wallet);
-      } 
-      else if (walletType === 'brave') {
-        console.log('Connecting to Brave Wallet...');
-        
-        // Check if we're in Brave browser (alternative method)
-        const isBrave = typeof window !== 'undefined' && 
-                       window.navigator.userAgent.includes('Brave') && 
-                       window.ethereum?.isBraveWallet;
-        console.log('Is Brave Browser detected:', isBrave);
-        
-        // Try connecting directly with metamaskWallet for Brave
-        try {
-          console.log('Trying to connect with metamaskWallet for Brave...');
-          const wallet = metamaskWallet();
-          console.log('Created wallet instance:', wallet);
-          
-          // More detailed logging of window.ethereum
-          console.log('window.ethereum:', window.ethereum);
-          if (window.ethereum && window.ethereum.providers) {
-            console.log('Available providers:', window.ethereum.providers);
-          }
-          
-          await connect(wallet);
-          console.log('Connection attempt completed');
-        } catch (braveError) {
-          console.error('Brave wallet connection error:', braveError);
-          
-          // Try connecting using window.ethereum directly if available
-          if (window.ethereum) {
-            console.log('Trying alternative connection method...');
-            try {
-              // Request accounts directly
-              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-              console.log('Accounts received:', accounts);
-              
-              // Now try the normal connection
-              await connect(metamaskWallet());
-            } catch (directError) {
-              console.error('Direct connection error:', directError);
-              throw directError;
-            }
-          } else {
-            throw braveError;
-          }
-        }
-      } 
-      else if (walletType === 'coinbase') {
-        console.log('Connecting to Coinbase Wallet...');
-        const wallet = coinbaseWallet();
-        console.log('Created wallet instance:', wallet);
-        await connect(wallet);
-      } 
-      else if (walletType === 'walletconnect') {
-        console.log('Connecting to WalletConnect...');
-        const wallet = walletConnect();
-        console.log('Created wallet instance:', wallet);
-        await connect(wallet);
-      }
-      
-      console.log('Connection process completed');
-    } catch (error) {
-      console.error('Connection failed:', error);
-      alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Local state for loading indicator
-  const [isLocalLoading, setIsLoading] = useState(false);
-  // Combine both loading states
-  const isButtonLoading = isLoading || isLocalLoading;
-
-  if (address) {
-    return (
-      <div className="flex gap-2">
-        <button 
-          onClick={onDashboard}
-          className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          type="button"
-        >
-          {formatAddress(address)}
-        </button>
-        <button 
-          onClick={() => setShowSignOutDialog(true)}
-          className="px-2 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
-          type="button"
-        >
-          <LogOut size={16} />
-        </button>
-
-        <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Sign Out</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to sign out?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setShowSignOutDialog(false)}>
-                Cancel
-              </AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={() => {
-                  onSignOut();
-                  setShowSignOutDialog(false);
-                }}
-                className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-              >
-                Sign Out
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <button 
-        onClick={handleConnectWallet}
-        disabled={isButtonLoading}
-        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-        type="button"
-      >
-        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}
-      </button>
-      
-      <WalletModal 
-        isOpen={showWalletModal}
-        onClose={() => setShowWalletModal(false)}
-        onSelectWallet={handleSelectWallet}
-      />
-    </>
-  );
-};
-
+// App Content
 const AppContent: FC = () => {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const [error, setError] = useState<string | null>(null);
@@ -390,11 +330,6 @@ const App: FC = () => {
     <ThirdwebProvider 
       activeChain={Sepolia}
       clientId={clientId}
-      supportedWallets={[
-        metamaskWallet(),
-        coinbaseWallet(),
-        walletConnect()
-      ]}
     >
       <AppContent />
     </ThirdwebProvider>
