@@ -297,7 +297,7 @@ const AppContent: FC = () => {
 
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Header */}
-          <div className="w-full flex flex-col items-center gap-3 sm:hidden">
+          <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center gap-4 sm:hidden relative">
             <div className="flex-shrink-0">
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
@@ -306,7 +306,7 @@ const AppContent: FC = () => {
               />
             </div>
             
-            <div className="w-full absolute top-3 right-2 sm:hidden">
+            <div className="w-full max-w-md mx-auto px-4">
               <WalletButton 
                 onDashboard={() => setMode('dashboard')}
                 onSignOut={handleSignOut}
