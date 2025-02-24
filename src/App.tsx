@@ -7,10 +7,7 @@ import {
   useConnectionStatus,
   metamaskWallet,
   coinbaseWallet,
-  walletConnect,
-  // Explicitly import the types
-  WalletConfig,
-  WalletInstance
+  walletConnect
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
@@ -174,7 +171,9 @@ const WalletButton: FC<{
           walletConfig = coinbaseWallet();
           break;
         case 'walletconnect':
-          walletConfig = walletConnect();
+          walletConfig = walletConnect({
+            projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || ""
+          });
           break;
         default:
           throw new Error(`Unsupported wallet type: ${walletType}`);
@@ -357,9 +356,13 @@ const App: FC = () => {
       activeChain={Sepolia}
       clientId={clientId}
       supportedWallets={[
-        metamaskWallet(),
+        metamaskWallet({
+          recommended: true
+        }),
         coinbaseWallet(),
-        walletConnect()
+        walletConnect({
+          projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || ""
+        })
       ]}
     >
       <AppContent />
