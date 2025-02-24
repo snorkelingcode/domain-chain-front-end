@@ -8,8 +8,9 @@ import {
   metamaskWallet,
   coinbaseWallet,
   walletConnect,
-  useWalletConfig,
+  // Explicitly import the types
   WalletConfig,
+  WalletInstance
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
@@ -27,6 +28,7 @@ import {
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle, X } from 'lucide-react';
 
+// Wallet selection modal component
 const WalletModal: FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -61,7 +63,7 @@ const WalletModal: FC<{
       id: 'metamask',
       name: 'MetaMask',
       icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-      installed: isMetaMaskInstalled && !isBraveWallet
+      installed: isMetaMaskInstalled && !isBraveWallet // Don't show both Brave and MetaMask
     },
     {
       id: 'coinbase',
@@ -73,7 +75,7 @@ const WalletModal: FC<{
       id: 'walletconnect',
       name: 'WalletConnect',
       icon: 'https://walletconnect.com/images/walletconnect-logo.svg',
-      installed: true
+      installed: true // Always available as a fallback
     }
   ];
 
@@ -120,11 +122,6 @@ const WalletModal: FC<{
   );
 };
 
-interface WalletButtonProps {
-  onDashboard: () => void;
-  onSignOut: () => void;
-}
-
 const WalletButton: FC<{
   onDashboard: () => void;
   onSignOut: () => void;
@@ -159,9 +156,8 @@ const WalletButton: FC<{
       setIsLocalLoading(true);
       console.log(`Attempting to connect with ${walletType}...`);
       
-      // Explicitly type the walletConfig as MetaMaskWallet config
-      let walletConfig: WalletConfig<MetaMaskWallet> = metamaskWallet();
-  
+      let walletConfig: any;
+
       switch (walletType) {
         case 'metamask':
           walletConfig = metamaskWallet();
@@ -175,18 +171,15 @@ const WalletButton: FC<{
           }
           break;
         case 'coinbase':
-          // Cast Coinbase wallet to MetaMask wallet config type
-          walletConfig = coinbaseWallet() as WalletConfig<MetaMaskWallet>;
+          walletConfig = coinbaseWallet();
           break;
         case 'walletconnect':
-          // Cast WalletConnect to MetaMask wallet config type
-          walletConfig = walletConnect() as WalletConfig<MetaMaskWallet>;
+          walletConfig = walletConnect();
           break;
         default:
           throw new Error(`Unsupported wallet type: ${walletType}`);
       }
-  
-      // Now the type is explicitly WalletConfig<MetaMaskWallet>
+
       await connect(walletConfig);
     } catch (error) {
       console.error('Connection failed:', error);
