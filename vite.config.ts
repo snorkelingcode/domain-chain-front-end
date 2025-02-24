@@ -1,15 +1,15 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'  // Note: using react-swc for better performance
+import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  define: {
-    'window.global': {},
-    'global': {}
-  },
   resolve: {
     alias: {
-      './runtimeConfig': './runtimeConfig.browser',
-    }
-  }
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  build: {
+    sourcemap: true,
+  },
 })
