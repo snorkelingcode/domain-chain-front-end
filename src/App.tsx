@@ -33,19 +33,34 @@ const WalletModal: FC<{
 }> = ({ isOpen, onClose, onSelectWallet }) => {
   if (!isOpen) return null;
 
-  // Detect if MetaMask is installed
-  const isMetaMaskInstalled = typeof window !== 'undefined' && window.ethereum && (window.ethereum.isMetaMask || window.ethereum.providers?.some((provider: { isMetaMask?: boolean }) => provider.isMetaMask));
+  // Detect available wallets
+  const ethereum = typeof window !== 'undefined' ? window.ethereum : null;
   
-  // Detect if Coinbase Wallet is installed
-  const isCoinbaseInstalled = typeof window !== 'undefined' && window.ethereum && window.ethereum.isCoinbaseWallet;
+  // Check for Brave wallet
+  const isBraveWallet = ethereum?.isBraveWallet === true;
+  
+  // Check for MetaMask
+  const isMetaMaskInstalled = ethereum && (
+    ethereum.isMetaMask || 
+    ethereum.providers?.some((provider: { isMetaMask?: boolean }) => provider.isMetaMask)
+  );
+  
+  // Check for Coinbase Wallet
+  const isCoinbaseInstalled = ethereum?.isCoinbaseWallet === true;
   
   // List of supported wallets and their details
   const wallets = [
     {
+      id: 'brave',
+      name: 'Brave Wallet',
+      icon: 'https://brave.com/static-assets/images/brave-logo-no-shadow.svg',
+      installed: isBraveWallet
+    },
+    {
       id: 'metamask',
       name: 'MetaMask',
       icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-      installed: isMetaMaskInstalled
+      installed: isMetaMaskInstalled && !isBraveWallet // Don't show both Brave and MetaMask
     },
     {
       id: 'coinbase',
@@ -133,15 +148,32 @@ const WalletButton: FC<WalletButtonProps> = ({
     
     try {
       setIsLoading(true);
+      console.log(`Attempting to connect with ${walletType}...`);
+      
       if (walletType === 'metamask') {
-        await connect(metamaskWallet());
-      } else if (walletType === 'coinbase') {
-        await connect(coinbaseWallet());
-      } else if (walletType === 'walletconnect') {
-        await connect(walletConnect());
+        const metamaskConfig = metamaskWallet();
+        console.log('MetaMask config:', metamaskConfig);
+        await connect(metamaskConfig);
+      } 
+      else if (walletType === 'brave') {
+        // Brave wallet uses the same underlying provider as MetaMask
+        const metamaskConfig = metamaskWallet();
+        console.log('Brave wallet config:', metamaskConfig);
+        await connect(metamaskConfig);
+      } 
+      else if (walletType === 'coinbase') {
+        const coinbaseConfig = coinbaseWallet();
+        console.log('Coinbase config:', coinbaseConfig);
+        await connect(coinbaseConfig);
+      } 
+      else if (walletType === 'walletconnect') {
+        const walletConnectConfig = walletConnect();
+        console.log('WalletConnect config:', walletConnectConfig);
+        await connect(walletConnectConfig);
       }
     } catch (error) {
       console.error('Connection failed:', error);
+      alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -308,6 +340,7 @@ const AppContent: FC = () => {
 
 const App: FC = () => {
   const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
+  console.log('Using ThirdWeb Client ID:', clientId);
   
   return (
     <ThirdwebProvider 
