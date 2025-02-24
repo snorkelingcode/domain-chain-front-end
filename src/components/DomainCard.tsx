@@ -10,6 +10,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAddress } from '@thirdweb-dev/react';
 import type { DomainListing } from '../types/domain';
 import Checkout from './Checkout';
 
@@ -31,8 +32,11 @@ const DomainCard: React.FC<DomainCardProps> = ({
   onPurchase
 }) => {
   const [showCheckout, setShowCheckout] = useState(false);
+  const address = useAddress();
 
   const handlePurchaseClick = () => {
+    // Even if no wallet is connected, show checkout - the ConnectWallet button
+    // inside the checkout dialog will handle the connection flow
     setShowCheckout(true);
   };
 
