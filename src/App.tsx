@@ -125,7 +125,10 @@ interface WalletButtonProps {
   onSignOut: () => void;
 }
 
-const WalletButton: FC<WalletButtonProps> = ({
+const WalletButton: FC<{
+  onDashboard: () => void;
+  onSignOut: () => void;
+}> = ({
   onDashboard,
   onSignOut
 }) => {
@@ -156,13 +159,15 @@ const WalletButton: FC<WalletButtonProps> = ({
       setIsLocalLoading(true);
       console.log(`Attempting to connect with ${walletType}...`);
       
-      let walletConfig;
+      // Explicitly type the walletConfig as MetaMaskWallet config
+      let walletConfig: WalletConfig<MetaMaskWallet> = metamaskWallet();
+  
       switch (walletType) {
         case 'metamask':
           walletConfig = metamaskWallet();
           break;
         case 'brave':
-          // For Brave, check if it's an injected wallet
+          // For Brave, use MetaMask wallet configuration
           if (typeof window !== 'undefined' && window.ethereum?.isBraveWallet) {
             walletConfig = metamaskWallet();
           } else {
@@ -170,19 +175,19 @@ const WalletButton: FC<WalletButtonProps> = ({
           }
           break;
         case 'coinbase':
-          walletConfig = coinbaseWallet();
+          // Cast Coinbase wallet to MetaMask wallet config type
+          walletConfig = coinbaseWallet() as WalletConfig<MetaMaskWallet>;
           break;
         case 'walletconnect':
-          walletConfig = walletConnect();
+          // Cast WalletConnect to MetaMask wallet config type
+          walletConfig = walletConnect() as WalletConfig<MetaMaskWallet>;
           break;
         default:
           throw new Error(`Unsupported wallet type: ${walletType}`);
       }
   
-      // Type-safe connection
-      if (walletConfig) {
-        await connect(walletConfig);
-      }
+      // Now the type is explicitly WalletConfig<MetaMaskWallet>
+      await connect(walletConfig);
     } catch (error) {
       console.error('Connection failed:', error);
       alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
