@@ -1,4 +1,4 @@
-import React, { useState, type FC, type ReactElement } from 'react';
+import { useState, type FC } from 'react';
 import { 
   ThirdwebProvider,
   useAddress, 
@@ -39,7 +39,7 @@ const WalletButton: FC<WalletButtonProps> = ({
   onConnect,
   onDashboard,
   onSignOut
-}): ReactElement => {
+}) => {
   const formatAddress = (addr: string): string => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
@@ -77,9 +77,9 @@ const WalletButton: FC<WalletButtonProps> = ({
   );
 };
 
-const AppContent: FC = (): ReactElement => {
+const AppContent: FC = () => {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
-  const [showSignOutDialog, setShowSignOutDialog] = useState<boolean>(false);
+  const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -88,42 +88,33 @@ const AppContent: FC = (): ReactElement => {
   const disconnect = useDisconnect();
   const connectionStatus = useConnectionStatus();
 
-  const handleConnectWallet = async (): Promise<void> => {
+  const handleConnectWallet = async () => {
     setIsConnecting(true);
-    // Add connection timeout
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('Connection timeout. Please try again.')), 30000);
     });
 
     try {
-      // Race between connection and timeout
       await Promise.race([
         (async () => {
           if (!address) {
             const ethereum = (window as any).ethereum;
-            
-            // Check if we're in Brave
             const nav = navigator as any;
             const isBrave = nav.brave && await nav.brave.isBrave();
             
             if (isBrave) {
-              // If in Brave, first check if the user has a preferred wallet
               if (ethereum?.isBraveWallet) {
-                // Use Brave's built-in wallet
                 await connect(metamaskWallet({
                   recommended: true,
                   shimDisconnect: true
                 } as any));
               } else if (ethereum?.isMetaMask) {
-                // Use MetaMask if installed
                 await connect(metamaskWallet());
               } else {
-                // If no wallet is found, show an error
                 setError('Please enable your wallet in Brave or install MetaMask');
                 return;
               }
             } else {
-              // Non-Brave browser - proceed with normal MetaMask connection
               await connect(metamaskWallet());
             }
           } else {
@@ -141,7 +132,7 @@ const AppContent: FC = (): ReactElement => {
     }
   };
 
-  const handleSignOut = (): void => {
+  const handleSignOut = () => {
     disconnect();
     setMode('buy');
     setShowSignOutDialog(false);
@@ -239,7 +230,7 @@ const AppContent: FC = (): ReactElement => {
   );
 };
 
-const App: FC = (): ReactElement => {
+const App: FC = () => {
   const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
   console.log("Client ID:", clientId);
 

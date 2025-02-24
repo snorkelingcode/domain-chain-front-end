@@ -1,13 +1,8 @@
-import { useState, useEffect } from 'react';
-
-// Ensure type safety for environment variables
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+import { useState } from 'react';
 
 export const useEscrowContract = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [account, setAccount] = useState<string | null>(null);
 
   // Mock createEscrow method (you'll replace this with actual contract interaction)
   const createEscrow = async ({
@@ -41,7 +36,5 @@ export const useEscrowContract = () => {
     createEscrow,
     loading,
     error,
-    isConnected,
-    account
   };
 };
