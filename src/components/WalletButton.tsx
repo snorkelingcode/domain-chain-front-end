@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { 
   useAddress, 
   useDisconnect, 
-  useConnectionStatus
+  useConnectionStatus,
+  ConnectWallet
 } from "@thirdweb-dev/react";
 import { LogOut, X } from 'lucide-react';
 import { 
@@ -85,27 +86,12 @@ const WalletModal: React.FC<WalletModalProps> = ({
         
         <h2 className="text-xl font-semibold mb-4">Connect Wallet</h2>
         <div className="space-y-3">
-          {wallets.map(wallet => (
-            <button
-              key={wallet.id}
-              onClick={() => onSelectWallet(wallet.id)}
-              className="flex items-center w-full p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <img 
-                src={wallet.icon} 
-                alt={`${wallet.name} icon`} 
-                className="w-8 h-8 mr-3" 
-              />
-              <div className="text-left">
-                <span className="font-medium">{wallet.name}</span>
-                {wallet.installed && (
-                  <span className="text-xs text-green-600 block">
-                    Detected
-                  </span>
-                )}
-              </div>
-            </button>
-          ))}
+          <ConnectWallet
+            theme="light"
+            switchToActiveChain={true}
+            modalTitle="Select Your Wallet"
+            modalSize="wide"
+          />
         </div>
         
         <div className="mt-6 text-xs text-gray-500">
@@ -127,15 +113,11 @@ const WalletButton: React.FC<WalletButtonProps> = ({
 }) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const [isLocalLoading, setIsLoading] = useState(false);
   
   const address = useAddress();
   const disconnect = useDisconnect();
   const connectionStatus = useConnectionStatus();
   const isConnecting = connectionStatus === "connecting";
-
-  // Combine both loading states
-  const isButtonLoading = isConnecting || isLocalLoading;
 
   const formatAddress = (addr: string): string => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -145,63 +127,9 @@ const WalletButton: React.FC<WalletButtonProps> = ({
     setShowWalletModal(true);
   };
 
-  // Basic direct connection to wallet
-  const connectWallet = async (walletType: string): Promise<boolean> => {
-    try {
-      // Get the provider
-      if (!window.ethereum) {
-        console.error("No Ethereum provider detected");
-        return false;
-      }
-      
-      let provider = window.ethereum;
-      
-      // If we have providers array, select the right one based on wallet type
-      if (window.ethereum.providers) {
-        if (walletType === 'brave') {
-          const braveProvider = window.ethereum.providers.find(
-            (p: any) => p.isBraveWallet
-          );
-          if (braveProvider) provider = braveProvider;
-        } else if (walletType === 'metamask') {
-          const metaMaskProvider = window.ethereum.providers.find(
-            (p: any) => p.isMetaMask && !p.isBraveWallet
-          );
-          if (metaMaskProvider) provider = metaMaskProvider;
-        }
-      }
-      
-      // Request accounts - this will prompt the wallet connect dialog
-      await provider.request({ method: 'eth_requestAccounts' });
-      console.log(`Connected to ${walletType}`);
-      return true;
-    } catch (error) {
-      console.error(`${walletType} connection error:`, error);
-      return false;
-    }
-  };
-
-  // Handle wallet selection
-  const handleSelectWallet = async (walletType: string) => {
-    setShowWalletModal(false);
-    setIsLoading(true);
-    
-    try {
-      console.log(`Attempting to connect with ${walletType}...`);
-      
-      const connected = await connectWallet(walletType);
-      
-      if (connected) {
-        console.log('Connection process completed successfully');
-      } else {
-        throw new Error(`Failed to connect to ${walletType}`);
-      }
-    } catch (error: any) {
-      console.error('Connection failed:', error);
-      alert(`Wallet connection failed: ${error.message || 'Unknown error'}`);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSignOut = () => {
+    disconnect();
+    onSignOut();
   };
 
   if (address) {
@@ -235,10 +163,7 @@ const WalletButton: React.FC<WalletButtonProps> = ({
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction 
-                onClick={() => {
-                  onSignOut();
-                  setShowSignOutDialog(false);
-                }}
+                onClick={handleSignOut}
                 className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
               >
                 Sign Out
@@ -254,17 +179,17 @@ const WalletButton: React.FC<WalletButtonProps> = ({
     <>
       <button 
         onClick={handleConnectWallet}
-        disabled={isButtonLoading}
+        disabled={isConnecting}
         className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
         type="button"
       >
-        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}
+        {isConnecting ? 'Connecting...' : 'Connect Wallet'}
       </button>
       
       <WalletModal 
         isOpen={showWalletModal}
         onClose={() => setShowWalletModal(false)}
-        onSelectWallet={handleSelectWallet}
+        onSelectWallet={() => {}} // Not needed with ThirdWeb ConnectWallet
       />
     </>
   );
