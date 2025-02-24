@@ -181,7 +181,7 @@ const WalletButton: FC<WalletButtonProps> = ({
   
       // Type-safe connection
       if (walletConfig) {
-        
+        await connect(walletConfig);
       }
     } catch (error) {
       console.error('Connection failed:', error);
