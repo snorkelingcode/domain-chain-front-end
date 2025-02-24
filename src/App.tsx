@@ -7,7 +7,9 @@ import {
   useConnectionStatus,
   metamaskWallet,
   coinbaseWallet,
-  walletConnect
+  walletConnect,
+  useWalletConfig,
+  WalletConfig,
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
@@ -25,7 +27,6 @@ import {
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle, X } from 'lucide-react';
 
-// Wallet selection modal component
 const WalletModal: FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -60,7 +61,7 @@ const WalletModal: FC<{
       id: 'metamask',
       name: 'MetaMask',
       icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-      installed: isMetaMaskInstalled && !isBraveWallet // Don't show both Brave and MetaMask
+      installed: isMetaMaskInstalled && !isBraveWallet
     },
     {
       id: 'coinbase',
@@ -72,7 +73,7 @@ const WalletModal: FC<{
       id: 'walletconnect',
       name: 'WalletConnect',
       icon: 'https://walletconnect.com/images/walletconnect-logo.svg',
-      installed: true // Always available as a fallback
+      installed: true
     }
   ];
 
@@ -130,10 +131,15 @@ const WalletButton: FC<WalletButtonProps> = ({
 }) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
+  const [isLocalLoading, setIsLocalLoading] = useState(false);
+  
   const address = useAddress();
   const connect = useConnect();
+  const disconnect = useDisconnect();
   const connectionStatus = useConnectionStatus();
+  
   const isLoading = connectionStatus === "connecting";
+  const isButtonLoading = isLoading || isLocalLoading;
 
   const formatAddress = (addr: string): string => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
@@ -147,42 +153,48 @@ const WalletButton: FC<WalletButtonProps> = ({
     setShowWalletModal(false);
     
     try {
-      setIsLoading(true);
+      setIsLocalLoading(true);
       console.log(`Attempting to connect with ${walletType}...`);
       
-      if (walletType === 'metamask') {
-        const metamaskConfig = metamaskWallet();
-        console.log('MetaMask config:', metamaskConfig);
-        await connect(metamaskConfig);
-      } 
-      else if (walletType === 'brave') {
-        // Brave wallet uses the same underlying provider as MetaMask
-        const metamaskConfig = metamaskWallet();
-        console.log('Brave wallet config:', metamaskConfig);
-        await connect(metamaskConfig);
-      } 
-      else if (walletType === 'coinbase') {
-        const coinbaseConfig = coinbaseWallet();
-        console.log('Coinbase config:', coinbaseConfig);
-        await connect(coinbaseConfig);
-      } 
-      else if (walletType === 'walletconnect') {
-        const walletConnectConfig = walletConnect();
-        console.log('WalletConnect config:', walletConnectConfig);
-        await connect(walletConnectConfig);
+      let walletConfig;
+      switch (walletType) {
+        case 'metamask':
+          walletConfig = metamaskWallet();
+          break;
+        case 'brave':
+          // For Brave, check if it's an injected wallet
+          if (typeof window !== 'undefined' && window.ethereum?.isBraveWallet) {
+            walletConfig = metamaskWallet();
+          } else {
+            throw new Error("Brave Wallet not detected");
+          }
+          break;
+        case 'coinbase':
+          walletConfig = coinbaseWallet();
+          break;
+        case 'walletconnect':
+          walletConfig = walletConnect();
+          break;
+        default:
+          throw new Error(`Unsupported wallet type: ${walletType}`);
+      }
+  
+      // Type-safe connection
+      if (walletConfig) {
+        
       }
     } catch (error) {
       console.error('Connection failed:', error);
       alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
-      setIsLoading(false);
+      setIsLocalLoading(false);
     }
   };
-  
-  // Local state for loading indicator
-  const [isLocalLoading, setIsLoading] = useState(false);
-  // Combine both loading states
-  const isButtonLoading = isLoading || isLocalLoading;
+
+  const handleSignOut = () => {
+    disconnect();
+    onSignOut();
+  };
 
   if (address) {
     return (
@@ -216,7 +228,7 @@ const WalletButton: FC<WalletButtonProps> = ({
               </AlertDialogCancel>
               <AlertDialogAction 
                 onClick={() => {
-                  onSignOut();
+                  handleSignOut();
                   setShowSignOutDialog(false);
                 }}
                 className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
