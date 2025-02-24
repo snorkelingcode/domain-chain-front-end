@@ -25,35 +25,47 @@ import {
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle } from 'lucide-react';
 
-// Enhanced wallet button that uses thirdweb hooks
-const EnhancedWalletButton: FC<{
+interface WalletButtonProps {
   onDashboard: () => void;
   onSignOut: () => void;
-}> = ({ onDashboard, onSignOut }) => {
+}
+
+const WalletButton: FC<WalletButtonProps> = ({
+  onDashboard,
+  onSignOut
+}) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
   const address = useAddress();
   const connect = useConnect();
   const connectionStatus = useConnectionStatus();
-  const isConnecting = connectionStatus === "connecting";
+  const isLoading = connectionStatus === "connecting";
 
   const formatAddress = (addr: string): string => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const handleConnect = async () => {
+  const handleConnectWallet = async () => {
     try {
       await connect(metamaskWallet());
     } catch (error) {
-      console.error("Connection failed:", error);
+      console.error('MetaMask connection failed:', error);
+      
+      // Try Coinbase Wallet as fallback
+      try {
+        await connect(coinbaseWallet());
+      } catch (cbError) {
+        console.error('Coinbase connection failed:', cbError);
+        
+        // Try WalletConnect as last resort
+        try {
+          await connect(walletConnect());
+        } catch (wcError) {
+          console.error('WalletConnect connection failed:', wcError);
+        }
+      }
     }
   };
 
-  const handleSignOut = () => {
-    onSignOut();
-    setShowSignOutDialog(false);
-  };
-
-  // If connected, show address and dashboard button
   if (address) {
     return (
       <div className="flex gap-2">
@@ -72,7 +84,6 @@ const EnhancedWalletButton: FC<{
           <LogOut size={16} />
         </button>
 
-        {/* Sign Out Confirmation Dialog */}
         <AlertDialog open={showSignOutDialog} onOpenChange={setShowSignOutDialog}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -86,7 +97,10 @@ const EnhancedWalletButton: FC<{
                 Cancel
               </AlertDialogCancel>
               <AlertDialogAction 
-                onClick={handleSignOut}
+                onClick={() => {
+                  onSignOut();
+                  setShowSignOutDialog(false);
+                }}
                 className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
               >
                 Sign Out
@@ -98,26 +112,25 @@ const EnhancedWalletButton: FC<{
     );
   }
 
-  // If not connected, show connect button
   return (
     <button 
-      onClick={handleConnect}
-      disabled={isConnecting}
+      onClick={handleConnectWallet}
+      disabled={isLoading}
       className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
       type="button"
     >
-      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+      {isLoading ? 'Connecting...' : 'Connect Wallet'}
     </button>
   );
 };
 
-// AppContent with improved wallet connection
 const AppContent: FC = () => {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
+  const [error, setError] = useState<string | null>(null);
   const address = useAddress();
   const disconnect = useDisconnect();
 
-  // If user disconnects while in dashboard mode, switch to buy mode
+  // If in dashboard mode but not connected, switch to buy mode
   if (mode === 'dashboard' && !address) {
     setMode('buy');
   }
@@ -127,9 +140,23 @@ const AppContent: FC = () => {
     setMode('buy');
   };
 
+  const displayError = (message: string) => {
+    setError(message);
+    setTimeout(() => setError(null), 5000); // Clear error after 5 seconds
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="container mx-auto px-2 sm:px-4">
+        {error && (
+          <div className="absolute top-4 left-0 right-0 z-50 px-4">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Header */}
           <div className="w-full flex flex-col items-center gap-3 sm:hidden">
@@ -142,7 +169,7 @@ const AppContent: FC = () => {
             </div>
             
             <div className="absolute top-3 right-2 sm:hidden">
-              <EnhancedWalletButton 
+              <WalletButton 
                 onDashboard={() => setMode('dashboard')}
                 onSignOut={handleSignOut}
               />
@@ -162,7 +189,7 @@ const AppContent: FC = () => {
             </div>
 
             <div className="absolute right-0 flex items-center gap-2">
-              <EnhancedWalletButton 
+              <WalletButton 
                 onDashboard={() => setMode('dashboard')}
                 onSignOut={handleSignOut}
               />
@@ -183,7 +210,6 @@ const AppContent: FC = () => {
   );
 };
 
-// Updated App component with ThirdwebProvider
 const App: FC = () => {
   const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
   
