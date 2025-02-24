@@ -7,7 +7,7 @@ import {
   useConnectionStatus,
   metamaskWallet,
   coinbaseWallet,
-  walletConnect,
+  walletConnect
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
@@ -51,12 +51,6 @@ const WalletModal: FC<{
   // List of supported wallets and their details
   const wallets = [
     {
-      id: 'browser',
-      name: 'Browser Wallet',
-      icon: 'https://cdn-icons-png.flaticon.com/512/25/25659.png',
-      installed: true
-    },
-    {
       id: 'brave',
       name: 'Brave Wallet',
       icon: 'https://brave.com/static-assets/images/brave-logo-no-shadow.svg',
@@ -66,7 +60,7 @@ const WalletModal: FC<{
       id: 'metamask',
       name: 'MetaMask',
       icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-      installed: isMetaMaskInstalled && !isBraveWallet
+      installed: isMetaMaskInstalled && !isBraveWallet // Don't show both Brave and MetaMask
     },
     {
       id: 'coinbase',
@@ -78,7 +72,7 @@ const WalletModal: FC<{
       id: 'walletconnect',
       name: 'WalletConnect',
       icon: 'https://walletconnect.com/images/walletconnect-logo.svg',
-      installed: true
+      installed: true // Always available as a fallback
     }
   ];
 
@@ -139,7 +133,6 @@ const WalletButton: FC<WalletButtonProps> = ({
   const address = useAddress();
   const connect = useConnect();
   const connectionStatus = useConnectionStatus();
-  const [isLocalLoading, setIsLoading] = useState(false);
   const isLoading = connectionStatus === "connecting";
 
   const formatAddress = (addr: string): string => {
@@ -157,18 +150,26 @@ const WalletButton: FC<WalletButtonProps> = ({
       setIsLoading(true);
       console.log(`Attempting to connect with ${walletType}...`);
       
-      switch (walletType) {
-        case 'metamask':
-          await connect(metamaskWallet());
-          break;
-        case 'coinbase':
-          await connect(coinbaseWallet());
-          break;
-        case 'walletconnect':
-          await connect(walletConnect());
-          break;
-        default:
-          throw new Error('Unsupported wallet type');
+      if (walletType === 'metamask') {
+        const metamaskConfig = metamaskWallet();
+        console.log('MetaMask config:', metamaskConfig);
+        await connect(metamaskConfig);
+      } 
+      else if (walletType === 'brave') {
+        // Brave wallet uses the same underlying provider as MetaMask
+        const metamaskConfig = metamaskWallet();
+        console.log('Brave wallet config:', metamaskConfig);
+        await connect(metamaskConfig);
+      } 
+      else if (walletType === 'coinbase') {
+        const coinbaseConfig = coinbaseWallet();
+        console.log('Coinbase config:', coinbaseConfig);
+        await connect(coinbaseConfig);
+      } 
+      else if (walletType === 'walletconnect') {
+        const walletConnectConfig = walletConnect();
+        console.log('WalletConnect config:', walletConnectConfig);
+        await connect(walletConnectConfig);
       }
     } catch (error) {
       console.error('Connection failed:', error);
@@ -177,7 +178,9 @@ const WalletButton: FC<WalletButtonProps> = ({
       setIsLoading(false);
     }
   };
-
+  
+  // Local state for loading indicator
+  const [isLocalLoading, setIsLoading] = useState(false);
   // Combine both loading states
   const isButtonLoading = isLoading || isLocalLoading;
 
@@ -348,7 +351,6 @@ const App: FC = () => {
         coinbaseWallet(),
         walletConnect()
       ]}
-      autoConnect={false}
     >
       <AppContent />
     </ThirdwebProvider>
