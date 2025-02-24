@@ -244,11 +244,11 @@ const WalletButton: FC<{
     <>
       <button 
         onClick={handleConnectWallet}
-        disabled={isButtonLoading}  // Using the correct variable
+        disabled={isButtonLoading}
         className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 w-full"
         type="button"
       >
-        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}  // Using the correct variable
+        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'} 
       </button>
       
       <WalletModal 
