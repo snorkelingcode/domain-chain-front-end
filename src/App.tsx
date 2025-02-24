@@ -304,7 +304,7 @@ const AppContent: FC = () => {
                 alt="Domain Chain Logo" 
                 className="h-12 w-auto"
               />
-            </div>
+            
             
             <div>
               <WalletButton 
@@ -312,6 +312,7 @@ const AppContent: FC = () => {
                 onSignOut={handleSignOut}
               />
             </div>
+          </div>
           </div>
 
           {/* Desktop Header */}
