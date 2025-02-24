@@ -12,9 +12,9 @@
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-slot": "^1.1.2",
-    "@thirdweb-dev/chains": "^0.1.72",
-    "@thirdweb-dev/react": "^4.4.0",
-    "@thirdweb-dev/sdk": "^4.0.25",
+    "@thirdweb-dev/chains": "^0.1.120",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/sdk": "^4.0.99",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
     "ethers": "^5.7.2",
