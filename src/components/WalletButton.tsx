@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  useAddress, 
-  useDisconnect, 
-  useConnectionStatus,
-  useConnect,
-  ConnectWallet
-} from "@thirdweb-dev/react";
-import { LogOut, X } from 'lucide-react';
+// WalletButton.tsx - A standalone component you can import in App.tsx
+import React, { useState } from 'react';
+import { useAddress, useConnect, useDisconnect, useConnectionStatus } from "@thirdweb-dev/react";
+import { metamaskWallet, coinbaseWallet, walletConnect } from "@thirdweb-dev/react";
+import { LogOut } from 'lucide-react';
 import { 
   AlertDialog,
   AlertDialogContent,
@@ -19,6 +15,8 @@ import {
 } from './ui/Alert-Dialog';
 
 interface WalletButtonProps {
+  address?: string;
+  onConnect: () => void;
   onDashboard: () => void;
   onSignOut: () => void;
 }
@@ -28,14 +26,34 @@ const WalletButton: React.FC<WalletButtonProps> = ({
   onSignOut
 }) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
-  
   const address = useAddress();
-  const disconnect = useDisconnect();
+  const connect = useConnect();
   const connectionStatus = useConnectionStatus();
   const isConnecting = connectionStatus === "connecting";
 
   const formatAddress = (addr: string): string => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
+  const handleConnect = async () => {
+    try {
+      // Try MetaMask first
+      await connect(metamaskWallet());
+    } catch (error) {
+      console.error("Connection failed:", error);
+      try {
+        // Try Coinbase Wallet as fallback
+        await connect(coinbaseWallet());
+      } catch (secondError) {
+        console.error("Second connection attempt failed:", secondError);
+        try {
+          // Try WalletConnect as last resort
+          await connect(walletConnect());
+        } catch (thirdError) {
+          console.error("All connection attempts failed:", thirdError);
+        }
+      }
+    }
   };
 
   if (address) {
@@ -84,13 +102,15 @@ const WalletButton: React.FC<WalletButtonProps> = ({
     );
   }
 
-  // Use the ThirdWeb ConnectWallet component directly
   return (
-    <ConnectWallet 
-      theme="light"
-      btnTitle="Connect Wallet"
+    <button 
+      onClick={handleConnect}
+      disabled={isConnecting}
       className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-    />
+      type="button"
+    >
+      {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+    </button>
   );
 };
 
