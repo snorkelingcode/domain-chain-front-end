@@ -23,6 +23,40 @@ interface WalletButtonProps {
   onSignOut: () => void;
 }
 
+// Custom CSS for wallet button
+const walletButtonStyles = {
+  // Base button styles
+  connectButton: {
+    backgroundColor: "#2563eb", // Blue-600
+    color: "white",
+    borderRadius: "0.5rem",
+    fontWeight: "500",
+    fontSize: "0.875rem",
+    height: "40px", // Reduced height
+    padding: "0 1rem",
+    width: "100%", // Full width on mobile
+    transition: "background-color 0.2s",
+    "&:hover": {
+      backgroundColor: "#1d4ed8" // Blue-700 on hover
+    }
+  },
+  // Connected state button styles
+  detailsButton: {
+    backgroundColor: "#2563eb", // Blue-600
+    color: "white",
+    borderRadius: "0.5rem",
+    fontWeight: "500",
+    fontSize: "0.875rem",
+    height: "40px", // Reduced height
+    padding: "0 1rem",
+    width: "100%", // Full width on mobile
+    transition: "background-color 0.2s",
+    "&:hover": {
+      backgroundColor: "#1d4ed8" // Blue-700 on hover
+    }
+  }
+};
+
 const WalletButton: React.FC<WalletButtonProps> = ({
   onDashboard,
   onSignOut
@@ -44,17 +78,17 @@ const WalletButton: React.FC<WalletButtonProps> = ({
 
   if (address) {
     return (
-      <div className="flex gap-2">
+      <div className="flex gap-2 w-full sm:w-auto">
         <button 
           onClick={onDashboard}
-          className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 h-10 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-1 sm:flex-none"
           type="button"
         >
           {formatAddress(address)}
         </button>
         <button 
           onClick={() => setShowSignOutDialog(true)}
-          className="px-2 py-2 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+          className="px-2 py-2 h-10 text-sm font-medium bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
           type="button"
         >
           <LogOut size={16} />
@@ -86,13 +120,16 @@ const WalletButton: React.FC<WalletButtonProps> = ({
   }
 
   return (
-    <ConnectWallet
-      theme="light"
-      btnTitle="Connect Wallet"
-      modalTitle="Connect Your Wallet"
-      switchToActiveChain={true}
-      modalSize="wide"
-    />
+    <div className="w-full sm:w-auto">
+      <ConnectWallet
+        theme="light"
+        btnTitle="Connect Wallet"
+        modalTitle="Connect Your Wallet"
+        switchToActiveChain={true}
+        modalSize="wide"
+        className="!h-10 !bg-blue-600 hover:!bg-blue-700 !text-white !font-medium !text-sm !rounded-lg !w-full sm:!w-auto !transition-colors"
+      />
+    </div>
   );
 };
 

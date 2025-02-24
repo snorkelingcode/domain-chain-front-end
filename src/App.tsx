@@ -46,7 +46,7 @@ const AppContent: FC = () => {
         )}
 
         <div className="flex flex-col items-center py-3 sm:py-6">
-          {/* Mobile Header */}
+          {/* Mobile Header - Ensures wallet button spans the width of the container */}
           <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 sm:hidden relative px-4">
             <div className="flex-shrink-0">
               <img 
@@ -64,7 +64,7 @@ const AppContent: FC = () => {
             </div>
           </div>
 
-          {/* Desktop Header */}
+          {/* Desktop Header - Wallet button uses natural width */}
           <div className="hidden sm:flex w-full relative justify-center items-center">
             <div className="absolute left-0" />
 
