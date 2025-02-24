@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useEffect } from 'react';
 import { 
   ThirdwebProvider,
   useAddress, 
@@ -23,7 +23,86 @@ import {
   AlertDialogCancel
 } from './components/ui/Alert-Dialog';
 import { Alert, AlertDescription } from './components/ui/Alerts';
-import { LogOut, AlertCircle } from 'lucide-react';
+import { LogOut, AlertCircle, X } from 'lucide-react';
+
+// Wallet selection modal component
+const WalletModal: FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  onSelectWallet: (walletType: string) => void;
+}> = ({ isOpen, onClose, onSelectWallet }) => {
+  if (!isOpen) return null;
+
+  // Detect if MetaMask is installed
+  const isMetaMaskInstalled = typeof window !== 'undefined' && window.ethereum && (window.ethereum.isMetaMask || window.ethereum.providers?.some((provider: { isMetaMask?: boolean }) => provider.isMetaMask));
+  
+  // Detect if Coinbase Wallet is installed
+  const isCoinbaseInstalled = typeof window !== 'undefined' && window.ethereum && window.ethereum.isCoinbaseWallet;
+  
+  // List of supported wallets and their details
+  const wallets = [
+    {
+      id: 'metamask',
+      name: 'MetaMask',
+      icon: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
+      installed: isMetaMaskInstalled
+    },
+    {
+      id: 'coinbase',
+      name: 'Coinbase Wallet',
+      icon: 'https://www.coinbase.com/assets/mobile/wallet_app_icon-7a2c7078886664c5c74c3933a9bf2e26e52c539bba5882af09e1e3ccd53e4ce7.png',
+      installed: isCoinbaseInstalled
+    },
+    {
+      id: 'walletconnect',
+      name: 'WalletConnect',
+      icon: 'https://walletconnect.com/images/walletconnect-logo.svg',
+      installed: true // Always available as a fallback
+    }
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 m-4 relative">
+        <button 
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+        >
+          <X size={24} />
+        </button>
+        
+        <h2 className="text-xl font-semibold mb-4">Connect Wallet</h2>
+        <div className="space-y-3">
+          {wallets.map(wallet => (
+            <button
+              key={wallet.id}
+              onClick={() => onSelectWallet(wallet.id)}
+              className="flex items-center w-full p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <img 
+                src={wallet.icon} 
+                alt={`${wallet.name} icon`} 
+                className="w-8 h-8 mr-3" 
+              />
+              <div className="text-left">
+                <span className="font-medium">{wallet.name}</span>
+                {wallet.installed && (
+                  <span className="text-xs text-green-600 block">
+                    Detected
+                  </span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
+        
+        <div className="mt-6 text-xs text-gray-500">
+          By connecting a wallet, you agree to Domain Chain's Terms of Service and acknowledge that you have read and understand the privacy policy.
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface WalletButtonProps {
   onDashboard: () => void;
@@ -35,6 +114,7 @@ const WalletButton: FC<WalletButtonProps> = ({
   onSignOut
 }) => {
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const address = useAddress();
   const connect = useConnect();
   const connectionStatus = useConnectionStatus();
@@ -44,27 +124,33 @@ const WalletButton: FC<WalletButtonProps> = ({
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  const handleConnectWallet = async () => {
+  const handleConnectWallet = () => {
+    setShowWalletModal(true);
+  };
+
+  const handleSelectWallet = async (walletType: string) => {
+    setShowWalletModal(false);
+    
     try {
-      await connect(metamaskWallet());
-    } catch (error) {
-      console.error('MetaMask connection failed:', error);
-      
-      // Try Coinbase Wallet as fallback
-      try {
+      setIsLoading(true);
+      if (walletType === 'metamask') {
+        await connect(metamaskWallet());
+      } else if (walletType === 'coinbase') {
         await connect(coinbaseWallet());
-      } catch (cbError) {
-        console.error('Coinbase connection failed:', cbError);
-        
-        // Try WalletConnect as last resort
-        try {
-          await connect(walletConnect());
-        } catch (wcError) {
-          console.error('WalletConnect connection failed:', wcError);
-        }
+      } else if (walletType === 'walletconnect') {
+        await connect(walletConnect());
       }
+    } catch (error) {
+      console.error('Connection failed:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
+  // Local state for loading indicator
+  const [isLocalLoading, setIsLoading] = useState(false);
+  // Combine both loading states
+  const isButtonLoading = isLoading || isLocalLoading;
 
   if (address) {
     return (
@@ -113,14 +199,22 @@ const WalletButton: FC<WalletButtonProps> = ({
   }
 
   return (
-    <button 
-      onClick={handleConnectWallet}
-      disabled={isLoading}
-      className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
-      type="button"
-    >
-      {isLoading ? 'Connecting...' : 'Connect Wallet'}
-    </button>
+    <>
+      <button 
+        onClick={handleConnectWallet}
+        disabled={isButtonLoading}
+        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+        type="button"
+      >
+        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}
+      </button>
+      
+      <WalletModal 
+        isOpen={showWalletModal}
+        onClose={() => setShowWalletModal(false)}
+        onSelectWallet={handleSelectWallet}
+      />
+    </>
   );
 };
 
@@ -129,11 +223,13 @@ const AppContent: FC = () => {
   const [error, setError] = useState<string | null>(null);
   const address = useAddress();
   const disconnect = useDisconnect();
-
-  // If in dashboard mode but not connected, switch to buy mode
-  if (mode === 'dashboard' && !address) {
-    setMode('buy');
-  }
+  
+  // Update mode if user disconnects
+  useEffect(() => {
+    if (!address && mode === 'dashboard') {
+      setMode('buy');
+    }
+  }, [address, mode]);
 
   const handleSignOut = () => {
     disconnect();
