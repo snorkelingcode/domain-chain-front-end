@@ -1,68 +1,13 @@
 import { useState, useEffect } from 'react';
-import { createConfig, http } from 'wagmi';
-import { mainnet, arbitrum, polygon } from 'wagmi/chains';
-import { walletConnect } from 'wagmi/connectors';
-import { createWeb3Modal } from '@web3modal/wagmi';
 
 // Ensure type safety for environment variables
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-
-if (!projectId) {
-  console.error('Missing WalletConnect Project ID');
-}
-
-// Create wagmi config
-export const config = createConfig({
-  chains: [mainnet, arbitrum, polygon],
-  connectors: [
-    walletConnect({ 
-      projectId: projectId || '',
-      metadata: {
-        name: 'Domain Chain',
-        description: 'Domain Marketplace',
-        url: 'https://domainchain.com',
-        icons: ['https://yourdomain.com/logo.png']
-      }
-    })
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [arbitrum.id]: http(),
-    [polygon.id]: http()
-  }
-});
-
-// Create Web3Modal
-const web3modal = createWeb3Modal({
-  wagmiConfig: config,
-  projectId: projectId || '',
-  enableAnalytics: true
-});
 
 export const useEscrowContract = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
-
-
-  const connectWallet = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Open WalletConnect modal
-      web3modal.open();
-    } catch (err) {
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Failed to connect wallet';
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Mock createEscrow method (you'll replace this with actual contract interaction)
   const createEscrow = async ({
@@ -93,7 +38,6 @@ export const useEscrowContract = () => {
   };
 
   return {
-    connectWallet,
     createEscrow,
     loading,
     error,

@@ -13,14 +13,14 @@ import { Sepolia } from "@thirdweb-dev/chains";
 import BuyerInterface from './components/BuyerInterface';
 import Dashboard from './components/Dashboard';
 import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogAction,
+  AlertDialogCancel
 } from './components/ui/Alert-Dialog';
 import { Alert, AlertDescription } from './components/ui/Alerts';
 import { LogOut, AlertCircle } from 'lucide-react';
@@ -90,6 +90,7 @@ const AppContent: FC = (): ReactElement => {
   const handleConnectWallet = async (): Promise<void> => {
     try {
       if (!address) {
+        // Passing metamaskWallet configuration as required
         await connect(metamaskWallet());
       } else {
         setMode('dashboard');
@@ -199,12 +200,13 @@ const AppContent: FC = (): ReactElement => {
 };
 
 const App: FC = (): ReactElement => {
-  console.log("Client ID:", import.meta.env.VITE_THIRDWEB_CLIENT_ID);
+  const clientId = import.meta.env.VITE_THIRDWEB_CLIENT_ID;
+  console.log("Client ID:", clientId);
 
   return (
     <ThirdwebProvider 
       activeChain={Sepolia}
-      clientId={import.meta.env.VITE_THIRDWEB_CLIENT_ID}
+      clientId={clientId}
       supportedWallets={[
         metamaskWallet(),
         coinbaseWallet(),
