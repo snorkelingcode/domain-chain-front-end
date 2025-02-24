@@ -81,6 +81,7 @@ const AppContent: FC = (): ReactElement => {
   const [mode, setMode] = useState<'buy' | 'dashboard'>('buy');
   const [showSignOutDialog, setShowSignOutDialog] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const address = useAddress();
   const connect = useConnect();
@@ -88,16 +89,55 @@ const AppContent: FC = (): ReactElement => {
   const connectionStatus = useConnectionStatus();
 
   const handleConnectWallet = async (): Promise<void> => {
+    setIsConnecting(true);
+    // Add connection timeout
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Connection timeout. Please try again.')), 30000);
+    });
+
     try {
-      if (!address) {
-        // Passing metamaskWallet configuration as required
-        await connect(metamaskWallet());
-      } else {
-        setMode('dashboard');
-      }
+      // Race between connection and timeout
+      await Promise.race([
+        (async () => {
+          if (!address) {
+            const ethereum = (window as any).ethereum;
+            
+            // Check if we're in Brave
+            const nav = navigator as any;
+            const isBrave = nav.brave && await nav.brave.isBrave();
+            
+            if (isBrave) {
+              // If in Brave, first check if the user has a preferred wallet
+              if (ethereum?.isBraveWallet) {
+                // Use Brave's built-in wallet
+                await connect(metamaskWallet({
+                  recommended: true,
+                  shimDisconnect: true
+                } as any));
+              } else if (ethereum?.isMetaMask) {
+                // Use MetaMask if installed
+                await connect(metamaskWallet());
+              } else {
+                // If no wallet is found, show an error
+                setError('Please enable your wallet in Brave or install MetaMask');
+                return;
+              }
+            } else {
+              // Non-Brave browser - proceed with normal MetaMask connection
+              await connect(metamaskWallet());
+            }
+          } else {
+            setMode('dashboard');
+          }
+        })(),
+        timeoutPromise
+      ]);
     } catch (error) {
       console.error('Wallet connection failed:', error);
-      setError('Failed to connect wallet');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to connect wallet';
+      setError(errorMessage);
+    } finally {
+      setIsConnecting(false);
     }
   };
 
@@ -107,7 +147,7 @@ const AppContent: FC = (): ReactElement => {
     setShowSignOutDialog(false);
   };
 
-  const isLoading = connectionStatus === "connecting";
+  const isLoading = connectionStatus === "connecting" || isConnecting;
 
   return (
     <div className="min-h-screen bg-gray-100">
