@@ -151,26 +151,70 @@ const WalletButton: FC<WalletButtonProps> = ({
       console.log(`Attempting to connect with ${walletType}...`);
       
       if (walletType === 'metamask') {
-        const metamaskConfig = metamaskWallet();
-        console.log('MetaMask config:', metamaskConfig);
-        await connect(metamaskConfig);
+        console.log('Connecting to MetaMask...');
+        const wallet = metamaskWallet();
+        console.log('Created wallet instance:', wallet);
+        await connect(wallet);
       } 
       else if (walletType === 'brave') {
-        // Brave wallet uses the same underlying provider as MetaMask
-        const metamaskConfig = metamaskWallet();
-        console.log('Brave wallet config:', metamaskConfig);
-        await connect(metamaskConfig);
+        console.log('Connecting to Brave Wallet...');
+        
+        // Check if we're in Brave browser (alternative method)
+        const isBrave = typeof window !== 'undefined' && 
+                       window.navigator.userAgent.includes('Brave') && 
+                       window.ethereum?.isBraveWallet;
+        console.log('Is Brave Browser detected:', isBrave);
+        
+        // Try connecting directly with metamaskWallet for Brave
+        try {
+          console.log('Trying to connect with metamaskWallet for Brave...');
+          const wallet = metamaskWallet();
+          console.log('Created wallet instance:', wallet);
+          
+          // More detailed logging of window.ethereum
+          console.log('window.ethereum:', window.ethereum);
+          if (window.ethereum && window.ethereum.providers) {
+            console.log('Available providers:', window.ethereum.providers);
+          }
+          
+          await connect(wallet);
+          console.log('Connection attempt completed');
+        } catch (braveError) {
+          console.error('Brave wallet connection error:', braveError);
+          
+          // Try connecting using window.ethereum directly if available
+          if (window.ethereum) {
+            console.log('Trying alternative connection method...');
+            try {
+              // Request accounts directly
+              const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+              console.log('Accounts received:', accounts);
+              
+              // Now try the normal connection
+              await connect(metamaskWallet());
+            } catch (directError) {
+              console.error('Direct connection error:', directError);
+              throw directError;
+            }
+          } else {
+            throw braveError;
+          }
+        }
       } 
       else if (walletType === 'coinbase') {
-        const coinbaseConfig = coinbaseWallet();
-        console.log('Coinbase config:', coinbaseConfig);
-        await connect(coinbaseConfig);
+        console.log('Connecting to Coinbase Wallet...');
+        const wallet = coinbaseWallet();
+        console.log('Created wallet instance:', wallet);
+        await connect(wallet);
       } 
       else if (walletType === 'walletconnect') {
-        const walletConnectConfig = walletConnect();
-        console.log('WalletConnect config:', walletConnectConfig);
-        await connect(walletConnectConfig);
+        console.log('Connecting to WalletConnect...');
+        const wallet = walletConnect();
+        console.log('Created wallet instance:', wallet);
+        await connect(wallet);
       }
+      
+      console.log('Connection process completed');
     } catch (error) {
       console.error('Connection failed:', error);
       alert(`Wallet connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
