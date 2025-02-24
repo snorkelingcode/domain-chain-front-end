@@ -134,7 +134,7 @@ const WalletButton: React.FC<WalletButtonProps> = ({
 
   if (address) {
     return (
-      <div className="flex gap-4">
+      <div className="flex gap-2">
         <button 
           onClick={onDashboard}
           className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -180,7 +180,7 @@ const WalletButton: React.FC<WalletButtonProps> = ({
       <button 
         onClick={handleConnectWallet}
         disabled={isConnecting}
-        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 w-max"
         type="button"
       >
         {isConnecting ? 'Connecting...' : 'Connect Wallet'}
