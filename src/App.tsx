@@ -244,11 +244,11 @@ const WalletButton: FC<{
     <>
       <button 
         onClick={handleConnectWallet}
-        disabled={isButtonLoading}
-        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400"
+        disabled={isButtonLoading}  // Using the correct variable
+        className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-400 w-full"
         type="button"
       >
-        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}
+        {isButtonLoading ? 'Connecting...' : 'Connect Wallet'}  // Using the correct variable
       </button>
       
       <WalletModal 
@@ -297,7 +297,7 @@ const AppContent: FC = () => {
 
         <div className="flex flex-col items-center py-3 sm:py-6">
           {/* Mobile Header */}
-          <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center gap-4 sm:hidden relative px-4">
+          <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center gap-4 sm:hidden relative px-4">
             <div className="flex-shrink-0">
               <img 
                 src="/LogoHeader_Transparent_5972X_1080Y.png" 
