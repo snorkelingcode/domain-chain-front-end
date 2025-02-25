@@ -15,9 +15,6 @@
     "@thirdweb-dev/chains": "^0.1.120",
     "@thirdweb-dev/react": "^4.9.4",
     "@thirdweb-dev/sdk": "^4.0.99",
-    "@thirdweb/chains": "^0.1.120",
-    "@thirdweb/react": "^4.9.4",
-    "@thirdweb/sdk": "^4.0.99",
     "axios": "^1.7.9",
     "clsx": "^2.1.1",
     "ethers": "^5.7.2",
@@ -26,7 +23,8 @@
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "thirdweb": "^5.88.7"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.15",
