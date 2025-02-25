@@ -10,7 +10,7 @@ export default defineConfig({
         "script-src 'self'",
         "style-src 'self' 'unsafe-inline'",
         "connect-src 'self' https://connect.walletconnect.org",
-        "img-src 'self' 'https://connect.walletconnect.org'",
+        "img-src 'self' https://explorer-api.walletconnect.com https://thirdweb.com https://*.thirdweb.com https://thirdweb-cdn.com https://*.thirdweb-cdn.com data:",
         "frame-ancestors 'none'",
       ].join("; "),
       'X-Frame-Options': 'DENY',
