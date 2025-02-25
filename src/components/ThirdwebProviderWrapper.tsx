@@ -9,7 +9,6 @@ import {
   zerionWallet,
   phantomWallet,
   // Explicitly import the types
-  WalletConfig
 } from "@thirdweb-dev/react";
 import { Sepolia } from "@thirdweb-dev/chains";
 
