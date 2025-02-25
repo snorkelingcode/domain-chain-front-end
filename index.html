@@ -4,8 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-    <meta http-equiv="Content-Security-Policy" content="img-src 'self' https://thirdweb.com https://*.thirdweb.com https://thirdweb-cdn.com https://*.thirdweb-cdn.com data:;">
+    <title>Domain Chain</title>
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self';
+      style-src 'self' 'unsafe-inline';
+      img-src 'self' https://explorer-api.walletconnect.com data: https://thirdweb.com https://*.thirdweb.com https://thirdweb-cdn.com https://*.thirdweb-cdn.com;
+      connect-src 'self' https://connect.walletconnect.org https://explorer-api.walletconnect.com;
+      frame-ancestors 'none'
+    ">
   </head>
   <body>
     <div id="root"></div>
